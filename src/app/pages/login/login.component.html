@@ -1,0 +1,55 @@
+<div class="login-container">
+  <div class="login-box">
+    <div class="logo">
+      <img src="../../../assets/LogoTransparente.png" alt="Sua Logo" />
+    </div>
+    <form [formGroup]="formulario">
+      <div class="input-group">
+        <label for="usuario" class="form-label">Usuário</label>
+        <input
+          id="usuario"
+          class="form-control"
+          formControlName="usuario"
+          type="text"
+          placeholder="Digite seu nome de usuário!"
+          aria-label="default input example"
+        />
+        <div class="mensagem__erro-container">
+        <div class="mensagem__erro" *ngIf="formulario.get('usuario')?.errors && formulario.get('usuario')?.touched">
+          Usuário é obrigatório!
+        </div>
+        <div class="mensagem__erro" *ngIf="formulario.get('usuario')?.errors?.['minlength'] && formulario.get('usuario')?.touched">
+          Usuário precisa ter no mínimo 3 caracteres!
+        </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="inputPassword5" class="form-label">Senha</label>
+        <input
+          type="password"
+          id="inputPassword5"
+          class="form-control"
+          formControlName="senha"
+          aria-describedby="passwordHelpBlock"
+          placeholder="Digite sua senha!"
+        />
+        <div class="mensagem__erro-container">
+        <div class="mensagem__erro" *ngIf="formulario.get('senha')?.errors && formulario.get('senha')?.touched">
+          Senha é obrigatória!
+        </div>
+        <div class="mensagem__erro" *ngIf="formulario.get('senha')?.errors?.['minlength'] && formulario.get('senha')?.touched">
+          Senha precisa ter no mínimo 8 caracteres!
+        </div>
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="!formulario.valid" [ngClass]="habilitarBotao()">
+        ENTRAR
+      </button>
+    </form>
+  </div>
+  <div class="login-image">
+    <img src="../../../assets/WallpaperPC.png" alt="Imagem de fundo" />
+  </div>
+</div>
