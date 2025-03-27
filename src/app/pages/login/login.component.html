@@ -3,24 +3,26 @@
     <div class="logo">
       <img src="../../../assets/LogoTransparente.png" alt="Sua Logo" />
     </div>
-    <form [formGroup]="formulario">
+    <form [formGroup]="formulario" (ngSubmit)="fazerLogin()">
       <div class="input-group">
-        <label for="usuario" class="form-label">Usuário</label>
+        <label for="email" class="form-label">Usuário</label>
         <input
-          id="usuario"
+          #campoInserirUser
+          id="email"
           class="form-control"
-          formControlName="usuario"
+          formControlName="email"
           type="text"
           placeholder="Digite seu nome de usuário!"
           aria-label="default input example"
+          [@shakeAnimation]="formulario.get('email')?.invalid && formulario.get('email')?.touched ? 'invalid' : ''"
         />
         <div class="mensagem__erro-container">
-        <div class="mensagem__erro" *ngIf="formulario.get('usuario')?.errors && formulario.get('usuario')?.touched">
-          Usuário é obrigatório!
-        </div>
-        <div class="mensagem__erro" *ngIf="formulario.get('usuario')?.errors?.['minlength'] && formulario.get('usuario')?.touched">
-          Usuário precisa ter no mínimo 3 caracteres!
-        </div>
+          <div class="mensagem__erro" *ngIf="formulario.get('email')?.errors && formulario.get('email')?.touched">
+            Usuário é obrigatório!
+          </div>
+          <div class="mensagem__erro" *ngIf="formulario.get('email')?.errors?.['email'] && formulario.get('email')?.touched">
+            Usuário está incorreto!
+          </div>
         </div>
       </div>
 
@@ -33,14 +35,16 @@
           formControlName="senha"
           aria-describedby="passwordHelpBlock"
           placeholder="Digite sua senha!"
+          [@shakeAnimation]="formulario.get('senha')?.invalid && formulario.get('senha')?.touched ? 'invalid' : ''"
+          
         />
         <div class="mensagem__erro-container">
-        <div class="mensagem__erro" *ngIf="formulario.get('senha')?.errors && formulario.get('senha')?.touched">
-          Senha é obrigatória!
-        </div>
-        <div class="mensagem__erro" *ngIf="formulario.get('senha')?.errors?.['minlength'] && formulario.get('senha')?.touched">
-          Senha precisa ter no mínimo 8 caracteres!
-        </div>
+          <div class="mensagem__erro" *ngIf="formulario.get('senha')?.errors && formulario.get('senha')?.touched">
+            Senha é obrigatória!
+          </div>
+          <div class="mensagem__erro" *ngIf="formulario.get('senha')?.errors?.['minlength'] && formulario.get('senha')?.touched">
+            Senha precisa ter no mínimo 8 caracteres!
+          </div>
         </div>
       </div>
 

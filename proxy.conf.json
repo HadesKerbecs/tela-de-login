@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://desenvolvimento.maxdata.com.br",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

@@ -70,6 +70,9 @@
             },
             "development": {
               "browserTarget": "tela-de-login:build:development"
+            },
+            "options": {
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
