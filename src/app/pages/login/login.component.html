@@ -14,7 +14,7 @@
           type="text"
           placeholder="Digite seu nome de usuário!"
           aria-label="default input example"
-          [@shakeAnimation]="formulario.get('email')?.invalid && formulario.get('email')?.touched ? 'invalid' : ''"
+          [@shakeAnimation]="formulario.get('email')?.invalid && formulario.get('email')?.touched ? 'invalid' : 'valid'"
         />
         <div class="mensagem__erro-container">
           <div class="mensagem__erro" *ngIf="formulario.get('email')?.errors && formulario.get('email')?.touched">
@@ -35,8 +35,8 @@
           formControlName="senha"
           aria-describedby="passwordHelpBlock"
           placeholder="Digite sua senha!"
-          [@shakeAnimation]="formulario.get('senha')?.invalid && formulario.get('senha')?.touched ? 'invalid' : ''"
-          
+          [@shakeAnimation]="formulario.get('senha')?.invalid && formulario.get('senha')?.touched ? 'invalid' : 'valid'"
+
         />
         <div class="mensagem__erro-container">
           <div class="mensagem__erro" *ngIf="formulario.get('senha')?.errors && formulario.get('senha')?.touched">
@@ -45,6 +45,11 @@
           <div class="mensagem__erro" *ngIf="formulario.get('senha')?.errors?.['minlength'] && formulario.get('senha')?.touched">
             Senha precisa ter no mínimo 8 caracteres!
           </div>
+        </div>
+      </div>
+      <div class="mensagem__erro-container" *ngIf="erroMensagem">
+        <div class="mensagem__erro">
+          {{ erroMensagem }}
         </div>
       </div>
 

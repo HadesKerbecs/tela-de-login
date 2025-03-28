@@ -1,0 +1,61 @@
+<div class="form-container">
+  <form @shownState class="formulario ff-prompt"
+    [@shakeAnimation] = "usuarioForm"
+    [formGroup]="usuarioForm">
+    <label for="descricao">Descrição da tarefa</label>
+    <input required
+      type="text"
+      formControlName="descricao"
+      placeholder="Digite a tarefa"
+      [ngClass]="campoValidado('descricao')"
+    >
+    
+    <app-mensagem
+      *ngIf="!validado"
+      mensagemValidacao="Preencha a descrição">
+    </app-mensagem>
+    <label for="prioridade">Prioridade</label>
+    <select required
+      formControlName="prioridade"
+      [ngClass]="campoValidado('prioridade')"
+    >
+      <option disabled value="">Selecione</option>
+      <option value="Alta">Alta</option>
+      <option value="Normal">Normal</option>
+      <option value="Baixa">Baixa</option>
+    </select>
+    <app-mensagem
+      *ngIf="!validado"
+      mensagemValidacao="Escolha a prioridade">
+    </app-mensagem>
+    <label for="categoria">Categoria</label>
+    <select required
+      formControlName="categoria"
+      [ngClass]="campoValidado('categoria')"
+    >
+      <option disabled value="">Selecione</option>
+      <option value="Casa">Casa</option>
+      <option value="Trabalho">Trabalho</option>
+      <option value="Estudos">Estudos</option>
+    </select>
+    <app-mensagem
+      *ngIf="!validado"
+      mensagemValidacao="Escolha a categoria">
+    </app-mensagem>
+    <div class="botoes-form">
+      <button
+      id="botao-salvar"
+        (click)="salvarTarefa()"
+        class="botao-form"
+        [ngClass]="habilitarBotao()"
+        [disabled]="!formulario.valid">
+          Salvar
+      </button>
+      <button
+        (click)="cancelar()"
+        class="botao-form botao-cancelar">
+          Cancelar
+      </button>
+    </div>
+  </form>
+</div>

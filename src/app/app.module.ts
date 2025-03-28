@@ -8,14 +8,15 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './pages/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ListarClientesComponent } from './pages/listar-clientes/listar-clientes.component';
+import { ListarUsuariosComponent } from './pages/listar-usuarios/listar-usuarios.component';
+import { CadastrarUsuariosComponent } from './pages/cadastrar-usuarios/cadastrar-usuarios.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    ListarClientesComponent,
-
+    ListarUsuariosComponent,
+    CadastrarUsuariosComponent,
   ],
   imports: [
     BrowserModule,

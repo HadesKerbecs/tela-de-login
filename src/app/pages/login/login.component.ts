@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ValidacaoService } from '../validacao.service';
 import { shakeTrigger } from 'src/app/animations';
+import { Router } from '@angular/router';
+import { ConsultaApiAuthService } from '../consulta-api.service';
 
 @Component({
   selector: 'app-login',
@@ -17,8 +18,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
   erroMensagem: string | undefined;
 
   constructor(
-    private service: ValidacaoService,
+    private authLogin: ConsultaApiAuthService,
     private formBuilder: FormBuilder,
+    private router: Router
   ) {}
 
   ngAfterViewInit() {
@@ -51,10 +53,12 @@ export class LoginComponent implements OnInit, AfterViewInit {
         loja_id: 1
       };
 
-      this.service.conectarUsuario(credenciais).subscribe({
+      this.authLogin.conectarUsuario(credenciais).subscribe({
         next: (res) => {
           console.log('Login bem-sucedido!', res);
-          localStorage.setItem('token', res.token);
+          localStorage.setItem('token', res.access_token);
+          console.log(res.access_token)
+          this.router.navigate(['/listar-usuarios']);
         },
         error: (err) => {
           console.log('Erro no login:', err);
