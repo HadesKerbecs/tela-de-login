@@ -2,57 +2,370 @@
   <form @shownState class="formulario ff-prompt"
     [@shakeAnimation] = "usuarioForm"
     [formGroup]="usuarioForm">
-    <label for="descricao">Descrição da tarefa</label>
+    <label for="nome">Insira seu nome</label>
     <input required
       type="text"
-      formControlName="descricao"
-      placeholder="Digite a tarefa"
-      [ngClass]="campoValidado('descricao')"
+      formControlName="nome"
+      placeholder="Digite seu nome"
+      [ngClass]="campoValidado('nome')"
     >
-    
     <app-mensagem
       *ngIf="!validado"
-      mensagemValidacao="Preencha a descrição">
+      mensagemValidacao="Preencha seu nome">
     </app-mensagem>
-    <label for="prioridade">Prioridade</label>
+
+    <!-- FANTASIA -->
+    <label for="fantasia">Fantasia</label>
+    <input required
+      formControlName="fantasia"
+      placeholder="Digite seu nome (fantasia)"
+      [ngClass]="campoValidado('fantasia')"
+    >
+    <app-mensagem
+      *ngIf="!validado"
+      mensagemValidacao="Preencha seu nome (fantasia)">
+    </app-mensagem>
+
+    <!-- TIPO DE PESSOA -->
+    <label for="tipo_pessoa">Tipo de pessoa</label>
     <select required
-      formControlName="prioridade"
-      [ngClass]="campoValidado('prioridade')"
+      formControlName="tipo_pessoa"
+      [ngClass]="campoValidado('tipo_pessoa')"
     >
       <option disabled value="">Selecione</option>
-      <option value="Alta">Alta</option>
-      <option value="Normal">Normal</option>
-      <option value="Baixa">Baixa</option>
+      <option value="fisica">Fisica</option>
+      <option value="juridica">Juridica</option>
     </select>
     <app-mensagem
       *ngIf="!validado"
-      mensagemValidacao="Escolha a prioridade">
+      mensagemValidacao="Escolha o tipo de pessoa">
     </app-mensagem>
-    <label for="categoria">Categoria</label>
+
+    <!-- TIPO DE CADASTRO -->
+    <label for="tipo_cadastro">Tipo de cadastro</label>
     <select required
-      formControlName="categoria"
-      [ngClass]="campoValidado('categoria')"
+      formControlName="tipo_cadastro"
+      [ngClass]="campoValidado('tipo_cadastro')"
     >
       <option disabled value="">Selecione</option>
-      <option value="Casa">Casa</option>
-      <option value="Trabalho">Trabalho</option>
-      <option value="Estudos">Estudos</option>
+      <option value="cliente">Cliente</option>
+      <option value="fornecedor">Fornecedor</option>
+      <option value="outro">Outro</option>
     </select>
     <app-mensagem
       *ngIf="!validado"
-      mensagemValidacao="Escolha a categoria">
+      mensagemValidacao="Escolha o tipo de cadastro">
     </app-mensagem>
+
+    <!-- CNPJ/CPF -->
+    <label for="cpf_cnpj">CNPJ/CPF</label>
+    <input required
+      formControlName="cpf_cnpj"
+      placeholder="Digite seu CPNJ ou CPF"
+      [ngClass]="campoValidado('cpf_cnpj')"
+    >
+    <app-mensagem
+      *ngIf="!validado"
+      mensagemValidacao="Preencha seu CNPJ ou CPF">
+    </app-mensagem>
+
+    <!-- RG -->
+    <label for="rg_ie">RG_IE</label>
+    <input required
+      formControlName="rg_ie"
+      placeholder="Digite seu nom RG"
+      [ngClass]="campoValidado('rg_ie')"
+    >
+    <app-mensagem
+      *ngIf="!validado"
+      mensagemValidacao="Preencha seu RG">
+    </app-mensagem>
+
+    <!-- TIPO DE REGIME -->
+    <label for="tipo_regime_apuracao">Tipo de regime</label>
+    <select required
+      formControlName="tipo_regime_apuracao"
+      [ngClass]="campoValidado('tipo_regime_apuracao')"
+    >
+      <option disabled value="">Selecione</option>
+      <option value="simples">Simples</option>
+      <option value="lucro_presumido">Lucro Presumido</option>
+      <option value="lucro_real">Lucro Real</option>
+    </select>
+    <app-mensagem
+      *ngIf="!validado"
+      mensagemValidacao="Escolha o tipo de regime">
+    </app-mensagem>
+
+    <!-- TIPO PREÇO VENDA -->
+    <label for="tipo_preco_venda">Tipo de preço de venda</label>
+    <select required
+      formControlName="tipo_preco_venda"
+      [ngClass]="campoValidado('tipo_preco_venda')"
+    >
+      <option disabled value="">Selecione</option>
+      <option value="somentevenda">SomenteVenda</option>
+      <option value="outro">Outro</option>
+    </select>
+    <app-mensagem
+      *ngIf="!validado"
+      mensagemValidacao="Escolha o tipo de preço de venda">
+    </app-mensagem>
+
+
+    <!-- DIV CADASTRO ENDEREÇO PADRÃO (DESCRIÇÃO) -->
+     <div formGroupName="cadastro_endereco_padrao" class="form-container">
+      <label for="descricao">Descrição</label>
+      <input required
+        formControlName="descricao"
+        placeholder="Digite uma descrição para a entrega"
+        [ngClass]="campoValidado('descricao')"
+      >
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Preencha a descrição do endereço">
+      </app-mensagem>
+
+      <!-- ENDEREÇO -->
+      <label for="endereco">Endereço</label>
+      <input required
+        formControlName="endereco"
+        placeholder="Digite seu endereço"
+        [ngClass]="campoValidado('endereco')"
+      >
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Preencha o endereço">
+      </app-mensagem>
+
+      <!-- ENDEREÇO NÚMERO -->
+      <label for="endereco_numero">Número de endereço</label>
+      <input required
+        formControlName="endereco_numero"
+        placeholder="Digite o número do seu endereço"
+        [ngClass]="campoValidado('endereco_numero')"
+      >
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Preencha o número do seu endereço">
+      </app-mensagem>
+
+      <!-- ENDEREÇO BAIRRO -->
+      <label for="endereco_bairro">Bairo  de seu endereço</label>
+      <input required
+        formControlName="endereco_bairro"
+        placeholder="Digite o bairro de seu endereço"
+        [ngClass]="campoValidado('endereco_bairro')"
+      >
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Preencha o bairro de seu endreço">
+      </app-mensagem>
+
+      <!-- ENDEREÇO CEP -->
+      <label for="endereco_bairro">Bairro  de seu endereço</label>
+      <input required
+        formControlName="endereco_bairro"
+        placeholder="Digite o bairro de seu endereço"
+        [ngClass]="campoValidado('endereco_bairro')"
+      >
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Preencha o bairro de seu endreço">
+      </app-mensagem>
+
+      <!-- ENDEREÇO CEP -->
+      <label for="endereco_cep">CEP</label>
+      <input required
+        formControlName="endereco_bairro"
+        placeholder="Digite o bairro de seu endereço"
+        [ngClass]="campoValidado('endereco_bairro')"
+      >
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Preencha o bairro de seu endreço">
+      </app-mensagem>
+
+      <!-- ENDEREÇO MUNICIPIO CODIGO IBGE -->
+      <label for="endereco_municipio_codigo_ibge">Endereço municipio código ibge</label>
+      <input
+        formControlName="endereco_municipio_codigo_ibge"
+        placeholder="Digite o municipio código ibge"
+      >
+
+      <!-- ENDEREÇO PRINCIPAL -->
+      <label for="principal">Endereço principal?</label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="principal"
+        [value]="true"
+        [ngClass]="campoValidado('principal')"
+      >Sim
+      </label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="principal"
+        [value]="true"
+        [ngClass]="campoValidado('principal')"
+      >Não
+      </label>
+
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Informe se é seu endereço principal">
+      </app-mensagem>
+
+      <!-- COBRANÇA -->
+      <label for="cobranca">Endereço de cobrança?</label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="cobranca"
+        [value]="true"
+        [ngClass]="campoValidado('cobranca')"
+      >Sim
+      </label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="cobranca"
+        [value]="true"
+        [ngClass]="campoValidado('cobranca')"
+      >Não
+      </label>
+
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Informe se é seu endereço de cobrança">
+      </app-mensagem>
+
+      <!-- IE PRODUTOR RURAL -->
+      <label for="ie_produtor_rural">IE Produtor rual</label>
+      <input
+        formControlName="ie_produtor_rural"
+        placeholder="Digite o IE produtor rural"
+      >
+     </div>
+
+     <!-- DIV CADASTRO CONTATO PADRÃO (DESCRIÇÃO) -->
+     <div formGroupName="cadastro_contato_padrao">
+      <label for="descricao">Descrição</label>
+      <input required
+        formControlName="descricao"
+        placeholder="Digite uma descrição de contato"
+        [ngClass]="campoValidado('descricao')"
+      >
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Preencha a descrição do contato">
+      </app-mensagem>
+
+      <!-- TELEFONE -->
+      <label for="fone">Telefone</label>
+      <input required
+        formControlName="fone"
+        placeholder="Digite um telefone"
+        [ngClass]="campoValidado('fone')"
+      >
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Preencha o número de telefone">
+      </app-mensagem>
+
+      <!-- EMAIL -->
+      <label for="email">Email</label>
+      <input required
+        formControlName="email"
+        placeholder="Digite um email"
+        [ngClass]="campoValidado('email')"
+      >
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Preencha um email">
+      </app-mensagem>
+
+      <!-- ENVIAR ORÇAMENTO -->
+      <label for="enviar_orcamento">O email inserido é para mandar o orçamento?</label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="enviar_orcamento"
+        [value]="true"
+        [ngClass]="campoValidado('enviar_orcamento')"
+      >Sim
+      </label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="enviar_orcamento"
+        [value]="true"
+        [ngClass]="campoValidado('enviar_orcamento')"
+      >Não
+      </label>
+
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Selecione um campo">
+      </app-mensagem>
+
+      <!-- ENVIAR NOTA FISCAL -->
+      <label for="enviar_nf">O email inserido é para mandar a nota fiscal?</label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="enviar_nf"
+        [value]="true"
+        [ngClass]="campoValidado('enviar_nf')"
+      >Sim
+      </label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="enviar_nf"
+        [value]="true"
+        [ngClass]="campoValidado('enviar_nf')"
+      >Não
+      </label>
+
+      <!-- ENVIAR BOLETO -->
+      <label for="enviar_boleto">O email inserido é para mandar o boleto?</label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="enviar_boleto"
+        [value]="true"
+        [ngClass]="campoValidado('enviar_boleto')"
+      >Sim
+      </label>
+      <label>
+        <input required
+        type="radio"
+        formControlName="enviar_boleto"
+        [value]="true"
+        [ngClass]="campoValidado('enviar_boleto')"
+      >Não
+      </label>
+
+      <app-mensagem
+        *ngIf="!validado"
+        mensagemValidacao="Selecione um campo">
+      </app-mensagem>
+
+     </div>
+
     <div class="botoes-form">
       <button
       id="botao-salvar"
-        (click)="salvarTarefa()"
+        (click)="salvarCadastro()"
         class="botao-form"
         [ngClass]="habilitarBotao()"
-        [disabled]="!formulario.valid">
+        [disabled]="!usuarioForm.valid">
           Salvar
       </button>
       <button
-        (click)="cancelar()"
+        (click)="cancelarCadastro()"
         class="botao-form botao-cancelar">
           Cancelar
       </button>

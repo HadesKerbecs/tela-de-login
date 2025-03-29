@@ -1,6 +1,9 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { shownStateTrigger } from 'src/app/animations';
+import { ValidacaoService } from '../validacao.service';
+import { CadastroRequest } from 'src/app/hooks/dados';
 
 @Component({
   selector: 'app-cadastrar-usuarios',
@@ -11,26 +14,31 @@ import { shownStateTrigger } from 'src/app/animations';
   ]
 })
 export class CadastrarUsuariosComponent implements OnInit {
+  validado: boolean = false;
+  listaUsuarios: CadastroRequest[] = []
+
   usuarioForm: FormGroup = this.fb.group({
       nome: ['', Validators.required],
       fantasia: ['', Validators.required],
-      tipo_pessoa: ['Fisica', Validators.required],
-      tipo_cadastro: ['Cliente', Validators.required],
+      tipo_pessoa: ['', Validators.required],
+      tipo_cadastro: ['', Validators.required],
       cpf_cnpj: ['', Validators.required],
       rg_ie: ['', Validators.required],
-      tipo_regime_apuracao: ['Simples', Validators.required],
-      tipo_preco_venda: ['SomenteVenda', Validators.required],
+      tipo_regime_apuracao: ['', Validators.required],
+      tipo_preco_venda: ['', Validators.required],
+
       cadastro_endereco_padrao: this.fb.group({
         descricao: ['', Validators.required],
         endereco: ['', Validators.required],
         endereco_numero: ['', Validators.required],
         endereco_bairro: ['', Validators.required],
         endereco_cep: ['', Validators.required],
-        endereco_municipio_codigo_ibge: [0, Validators.required],
-        principal: [false, Validators.required],
+        endereco_municipio_codigo_ibge: [0],
+        principal: [null, Validators.required],
         cobranca: [false, Validators.required],
-        ie_produtor_rural: ['', Validators.required]
+        ie_produtor_rural: ['']
       }),
+
       cadastro_contato_padrao: this.fb.group({
         descricao: ['', Validators.required],
         fone: ['', Validators.required],
@@ -41,14 +49,19 @@ export class CadastrarUsuariosComponent implements OnInit {
       })
   })
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private service: ValidacaoService
+  ) { }
 
   ngOnInit(): void {
   }
+
   campoValidado(campoAtual: string): string {
     if (
-      this.formulario.get(campoAtual)?.errors &&
-      this.formulario.get(campoAtual)?.touched
+      this.usuarioForm.get(campoAtual)?.errors &&
+      this.usuarioForm.get(campoAtual)?.touched
     ) {
       this.validado = false;
       return 'form-tarefa input-invalido';
@@ -57,4 +70,38 @@ export class CadastrarUsuariosComponent implements OnInit {
       return 'form-tarefa';
     }
   }
+
+  habilitarBotao(): string {
+    if (this.usuarioForm.valid) {
+      return 'botao-salvar';
+    } else return 'botao-desabilitado';
+  }
+
+  cancelarCadastro() {
+    this.router.navigate(['/listar-usuarios'])
+     alert("Pensamento Cancelado!")
+   }
+
+   salvarCadastro() {
+    if (this.usuarioForm.value.id) {
+      this.editarUsuario();
+    } else {
+      this.criarUsuario();
+    }
+  }
+
+  criarUsuario() : void {
+    if(this.usuarioForm.valid) {
+      const novoUsuario: CadastroRequest = this.usuarioForm.value;
+      this.service.cadastrar(novoUsuario)
+    }
+  }
+
+  editarUsuario(): void {
+    if(this.usuarioForm.valid) {
+      const tarefaEditada: CadastroRequest = this.usuarioForm.value;
+      this.service.editar(tarefaEditada, true)
+    }
+  }
+
 }
