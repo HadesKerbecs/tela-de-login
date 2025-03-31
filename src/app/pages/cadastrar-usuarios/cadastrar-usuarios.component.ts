@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { shownStateTrigger } from 'src/app/animations';
+import { disappearStateTrigger, shownStateTrigger } from 'src/app/animations';
 import { ValidacaoService } from '../validacao.service';
 import { CadastroRequest } from 'src/app/hooks/dados';
 
@@ -10,12 +10,15 @@ import { CadastroRequest } from 'src/app/hooks/dados';
   templateUrl: './cadastrar-usuarios.component.html',
   styleUrls: ['./cadastrar-usuarios.component.scss'],
   animations: [
-    shownStateTrigger
+    shownStateTrigger,
+    disappearStateTrigger
   ]
 })
 export class CadastrarUsuariosComponent implements OnInit {
+  @Output() usuarioCadastrado = new EventEmitter<CadastroRequest>();
   validado: boolean = false;
-  listaUsuarios: CadastroRequest[] = []
+  etapaAtual: number = 1;
+  formAberto: boolean = true;
 
   usuarioForm: FormGroup = this.fb.group({
       nome: ['', Validators.required],
@@ -51,7 +54,6 @@ export class CadastrarUsuariosComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router,
     private service: ValidacaoService
   ) { }
 
@@ -64,12 +66,23 @@ export class CadastrarUsuariosComponent implements OnInit {
       this.usuarioForm.get(campoAtual)?.touched
     ) {
       this.validado = false;
-      return 'form-tarefa input-invalido';
+      return 'form-usuario input-invalido';
     } else {
       this.validado = true;
-      return 'form-tarefa';
+      return 'form-usuario';
     }
   }
+
+  etapaValida(): boolean {
+    if (this.etapaAtual === 1) {
+      return this.usuarioForm.valid; 
+    } else if (this.etapaAtual === 2) {
+      return this.usuarioForm.get('cadastro_endereco_padrao')?.valid || false;
+    } else if (this.etapaAtual === 3) {
+      return this.usuarioForm.get('cadastro_contato_padrao')?.valid || false;
+    }
+    return false;
+  }  
 
   habilitarBotao(): string {
     if (this.usuarioForm.valid) {
@@ -78,30 +91,27 @@ export class CadastrarUsuariosComponent implements OnInit {
   }
 
   cancelarCadastro() {
-    this.router.navigate(['/listar-usuarios'])
-     alert("Pensamento Cancelado!")
+    this.formAberto = !this.formAberto;
    }
 
-   salvarCadastro() {
-    if (this.usuarioForm.value.id) {
-      this.editarUsuario();
-    } else {
-      this.criarUsuario();
-    }
-  }
-
-  criarUsuario() : void {
+  criarUsuario() {
     if(this.usuarioForm.valid) {
-      const novoUsuario: CadastroRequest = this.usuarioForm.value;
+      const novoUsuario = this.usuarioForm.value;
+      this.usuarioCadastrado.emit(novoUsuario);
       this.service.cadastrar(novoUsuario)
+      this.usuarioForm.reset(); 
     }
   }
 
-  editarUsuario(): void {
-    if(this.usuarioForm.valid) {
-      const tarefaEditada: CadastroRequest = this.usuarioForm.value;
-      this.service.editar(tarefaEditada, true)
+  proximaEtapa() {
+    if(this.etapaAtual < 3) {
+      this.etapaAtual++;
     }
   }
 
+  etapaAnterior() {
+    if(this.etapaAtual > 1) {
+      this.etapaAtual--;
+    }
+  }
 }

@@ -6,22 +6,12 @@
     <button class="btn btn-danger">Sair</button>
   </div>
 
-  <app-cadastrar-usuarios *ngIf="formAberto" ></app-cadastrar-usuarios>
-
-  <!-- <table class="table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Nome</th>
-        <th>Telefone</th>
-        <th>E-mail</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
+  <app-cadastrar-usuarios (usuarioCadastrado)="atualizarLista($event)" *ngIf="formAberto" ></app-cadastrar-usuarios>
+  <table>
     <tbody>
-      <tr *ngFor="let pessoa of pessoas">
-        <td>{{ pessoa.id }}</td>
-        <td>{{ pessoa.nome }}</td>
+      <tr *ngFor="let usuario of listaUsuarios, let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ usuario.nome }}</td>
         <td>{{ pessoa.telefone }}</td>
         <td>{{ pessoa.email }}</td>
         <td>
@@ -29,5 +19,5 @@
         </td>
       </tr>
     </tbody>
-  </table> -->
+  </table>
 </div>

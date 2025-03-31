@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #FFE4D6;
+  background: #ececec;
   font-weight: 600;
   font-size: 16px;
   line-height: 24px;
@@ -13,7 +13,7 @@
   margin-bottom: 32px;
 }
 
-.form-tarefa {
+.form-usuario {
   font-family: 'Prompt';
   font-size: 16px;
   line-height: 24px;
@@ -38,10 +38,6 @@
 
 .botao-salvar {
   background: #63B77C;
-}
-
-.botao-cancelar {
-  background: #F89185;
 }
 
 .botao-desabilitado {
