@@ -3,21 +3,52 @@
 
   <div class="button-group">
     <button class="btn btn-primary" (click)="mostrarOuEsconderFormulario()">Inclusão de Novo Cadastro</button>
-    <button class="btn btn-danger">Sair</button>
+    <button class="btn btn-danger" (click)="logout()">Logout</button>
   </div>
 
-  <app-cadastrar-usuarios (usuarioCadastrado)="atualizarLista($event)" *ngIf="formAberto" ></app-cadastrar-usuarios>
+  <app-cadastrar-usuarios (usuarioCadastrado)="atualizarLista($event)" *ngIf="formAberto"></app-cadastrar-usuarios>
+
   <table>
+    <thead>
+      <tr>
+        <th>Dados de cadastro:</th>
+      </tr>
+    </thead>
     <tbody>
-      <tr *ngFor="let usuario of listaUsuarios, let i = index">
+      <tr *ngFor="let usuario of usuarios$ | async; let i = index">
         <td>{{ i + 1 }}</td>
         <td>{{ usuario.nome }}</td>
-        <td>{{ pessoa.telefone }}</td>
-        <td>{{ pessoa.email }}</td>
+        <td>{{ usuario.cadastro_contato_padrao.fone }}</td>
+        <td>{{ usuario.cadastro_contato_padrao.email }}</td>
         <td>
-          <button class="btn btn-danger" (click)="alteracaoDeCadastro(pessoa.id)">Excluir</button>
+          <button class="btn btn-danger" (click)="editarUsuario(usuario)">Editar</button>
+          <button class="btn btn-info" (click)="verMais(i)">
+            {{ detalhesVisiveis.has(i) ? 'Ver menos' : 'Ver mais' }}
+          </button>
         </td>
       </tr>
+      <ng-container *ngFor="let usuario of usuarios$ | async; let i = index">
+        <tr *ngIf="detalhesVisiveis.has(i)">
+          <td colspan="5">
+            <div class="detalhes-usuario">
+              <p><strong>Fantasia:</strong> {{ usuario.fantasia }}</p>
+              <p><strong>Tipo de Pessoa:</strong> {{ usuario.tipo_pessoa }}</p>
+              <p><strong>Tipo de Cadastro:</strong> {{ usuario.tipo_cadastro }}</p>
+              <p><strong>CNPJ/CPF:</strong> {{ usuario.cpf_cnpj }}</p>
+              <p><strong>RG/IE:</strong> {{ usuario.rg_ie }}</p>
+              <p><strong>Tipo de Regime:</strong> {{ usuario.tipo_regime_apuracao }}</p>
+              <p><strong>Tipo de Preço de Venda:</strong> {{ usuario.tipo_preco_venda }}</p>
+              <p><strong>Endereço:</strong> {{ usuario.cadastro_endereco_padrao.endereco }}</p>
+              <p><strong>Descrição do Endereço:</strong> {{ usuario.cadastro_endereco_padrao.descricao }}</p>
+              <p><strong>Telefone:</strong> {{ usuario.cadastro_contato_padrao.fone }}</p>
+              <p><strong>Email:</strong> {{ usuario.cadastro_contato_padrao.email }}</p>
+              <p><strong>Enviar Orçamento:</strong> {{ usuario.cadastro_contato_padrao.enviar_orcamento }}</p>
+              <p><strong>Enviar NF:</strong> {{ usuario.cadastro_contato_padrao.enviar_nf }}</p>
+              <p><strong>Enviar Boleto:</strong> {{ usuario.cadastro_contato_padrao.enviar_boleto }}</p>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
     </tbody>
   </table>
 </div>
