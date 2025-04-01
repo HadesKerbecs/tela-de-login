@@ -13,6 +13,7 @@ import { ConsultaCepService } from '../consulta-api.service';
   animations: [shownStateTrigger, disappearStateTrigger],
 })
 export class CadastrarUsuariosComponent implements OnInit {
+  // Emite o usuário cadastrado para o componente pai
   @Output() usuarioCadastrado = new EventEmitter<CadastroRequest>();
   @Output() modalAberto = new EventEmitter<void>();
   validado: boolean = false;
@@ -25,7 +26,9 @@ export class CadastrarUsuariosComponent implements OnInit {
     fantasia: ['', Validators.required],
     tipo_pessoa: ['', Validators.required],
     tipo_cadastro: ['', Validators.required],
-    cpf_cnpj: ['', [Validators.required, Validators.pattern(/^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})$/)]],
+    cadastro_tipo_id: [2, Validators.required],
+    cpf_cnpj: ['', [Validators.required, Validators.pattern(/^\d{11}$|^\d{14}$/)]],
+    // (/^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})$/)
     rg_ie: ['', Validators.required],
     tipo_regime_apuracao: ['', Validators.required],
     tipo_preco_venda: ['', Validators.required],
@@ -35,16 +38,19 @@ export class CadastrarUsuariosComponent implements OnInit {
       endereco: ['', Validators.required],
       endereco_numero: ['', Validators.required],
       endereco_bairro: ['', Validators.required],
-      endereco_cep: ['', [Validators.required, Validators.pattern(/^\d{5}-\d{3}$/)]],
+      endereco_cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+      // (/^\d{5}-\d{3}$/)
       endereco_municipio_codigo_ibge: [null],
       principal: [null, Validators.required],
       cobranca: [null, Validators.required],
-      ie_produtor_rural: ['', [Validators.pattern(/^[0-9]+$/)]],
+      ie_produtor_rural: ['', [Validators.pattern(/^\d+$/)]],
+      // (/^[0-9]+$/)
     }),
 
     cadastro_contato_padrao: this.fb.group({
       descricao: ['', Validators.required],
-      fone: ['', [Validators.required, Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/)]],
+      fone: ['', [Validators.required, Validators.pattern(/^\d{10,11}$/)]],
+      // (/^\(\d{2}\) \d{4,5}-\d{4}$/)
       email: ['', [Validators.required, Validators.email]],
       enviar_orcamento: [null, Validators.required],
       enviar_nf: [null, Validators.required],
@@ -55,7 +61,7 @@ export class CadastrarUsuariosComponent implements OnInit {
   constructor(private fb: FormBuilder, private service: ValidacaoService, private consultaCepService: ConsultaCepService) {}
 
   ngOnInit(): void {
-    this.camposAutomaticos();
+    // this.camposAutomaticos();
   }
 
   campoValidado(campoAtual: string): string {
@@ -73,19 +79,19 @@ export class CadastrarUsuariosComponent implements OnInit {
 
   etapaValida(): boolean {
     if (this.etapaAtual === 1) {
-      const campos = ['nome', 'fantasia', 'tipo_pessoa', 'tipo_cadastro', 
+      const campos = ['nome', 'fantasia', 'tipo_pessoa', 'tipo_cadastro',
                     'cpf_cnpj', 'rg_ie', 'tipo_regime_apuracao', 'tipo_preco_venda'];
       return campos.every(campo => this.usuarioForm.get(campo)?.valid);
     }
     else if (this.etapaAtual === 2) {
       const enderecoGroup = this.usuarioForm.get('cadastro_endereco_padrao') as FormGroup;
-      const campos = ['descricao', 'endereco', 'endereco_numero', 
+      const campos = ['descricao', 'endereco', 'endereco_numero',
                      'endereco_bairro', 'endereco_cep', 'principal', 'cobranca'];
       return campos.every(campo => enderecoGroup.get(campo)?.valid);
     }
     else if (this.etapaAtual === 3) {
       const contatoGroup = this.usuarioForm.get('cadastro_contato_padrao') as FormGroup;
-      const campos = ['descricao', 'fone', 'email', 
+      const campos = ['descricao', 'fone', 'email',
                      'enviar_orcamento', 'enviar_nf', 'enviar_boleto'];
       return campos.every(campo => contatoGroup.get(campo)?.valid);
     }
@@ -106,23 +112,51 @@ export class CadastrarUsuariosComponent implements OnInit {
 
   cancelarCadastro() {
     this.formAberto = !this.formAberto;
+    this.usuarioForm.reset();
+  }
+
+  salvarCadastro() {
+    if(this.usuarioForm.value.id) {
+      this.editarUsuario();
+    } else {
+      this.criarUsuario();
+    }
   }
 
   criarUsuario() {
+    console.log("Tentando criar usuário...");
+    this.editando = false;
     if (this.usuarioForm.valid) {
       const novoUsuario = this.usuarioForm.value;
-      this.usuarioCadastrado.emit(novoUsuario);
+      console.log("Dados do usuário:", novoUsuario);
+
+      // this.usuarioCadastrado.emit(novoUsuario);
       this.service.cadastrar(novoUsuario);
+
+      localStorage.setItem('usuario', JSON.stringify(novoUsuario));
+
       this.usuarioForm.reset();
+      this.formAberto = !this.formAberto;
+      alert('Usuário cadastrado!')
+    } else {
+      console.error("Formulário inválido!");
     }
   }
 
   editarUsuario(): void {
     if (this.usuarioForm.valid) {
       const usuarioEditado: CadastroRequest = this.usuarioForm.value;
+      console.log('Dados antes de editar:', usuarioEditado);
       this.service.editar(usuarioEditado, true);
       this.formAberto = false;
     }
+  }
+
+  abrirModalParaEdicao(usuario: CadastroRequest) {
+    this.usuarioForm.patchValue(usuario);
+    this.formAberto = true;
+    this.editando = true;
+    this.modalAberto.emit();
   }
 
   proximaEtapa() {
@@ -135,13 +169,6 @@ export class CadastrarUsuariosComponent implements OnInit {
     if (this.etapaAtual > 1) {
       this.etapaAtual--;
     }
-  }
-
-  abrirModalParaEdicao(usuario: CadastroRequest) {
-    this.usuarioForm.patchValue(usuario);
-    this.formAberto = true;
-    this.editando = true;
-    this.modalAberto.emit();
   }
 
   consultaCEP(evento: any){
@@ -169,42 +196,42 @@ export class CadastrarUsuariosComponent implements OnInit {
     });
   }
 
-  private camposAutomaticos(): void {
-    this.usuarioForm.get('cpf_cnpj')?.valueChanges.subscribe(value => {
-      const organizar = value.replace(/\D/g, '');
-      if(organizar.length <= 11) {
-        this.usuarioForm.get('cpf_cnpj')?.setValue(
-          organizar.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4'),
-          { emitEvent: false }
-        );
-      } else {
-        this.usuarioForm.get('cpf_cnpj')?.setValue(
-          organizar.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5'),
-          {emitEvent: false}
-        );
-      }
-    });
+  // private camposAutomaticos(): void {
+  //   this.usuarioForm.get('cpf_cnpj')?.valueChanges.subscribe(value => {
+  //     const organizar = value.replace(/\D/g, '');
+  //     if(organizar.length <= 11) {
+  //       this.usuarioForm.get('cpf_cnpj')?.setValue(
+  //         organizar.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4'),
+  //         { emitEvent: false }
+  //       );
+  //     } else {
+  //       this.usuarioForm.get('cpf_cnpj')?.setValue(
+  //         organizar.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5'),
+  //         {emitEvent: false}
+  //       );
+  //     }
+  //   });
 
-    this.usuarioForm.get('rg_ie')?.valueChanges.subscribe(value => {
-      const apenasNumeros = value.replace(/\D/g, '');
-      if (value !== apenasNumeros) {
-        this.usuarioForm.get('rg_ie')?.setValue(apenasNumeros, { emitEvent: false });
-      }
-    });
+  //   this.usuarioForm.get('rg_ie')?.valueChanges.subscribe(value => {
+  //     const apenasNumeros = value.replace(/\D/g, '');
+  //     if (value !== apenasNumeros) {
+  //       this.usuarioForm.get('rg_ie')?.setValue(apenasNumeros, { emitEvent: false });
+  //     }
+  //   });
 
-    this.usuarioForm.get('cadastro_contato_padrao.fone')?.valueChanges.subscribe(value => {
-      const organizar = value.replace(/\D/g, '');
-      if(organizar.length > 10) {
-        this.usuarioForm.get('fone')?.setValue(
-          organizar.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'),
-          { emitEvent: false }
-        );
-      } else {
-        this.usuarioForm.get('cadastro_contato_padrao.fone')?.setValue(
-          organizar.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3'),
-          { emitEvent: false }
-        );
-      }
-    });
-  }
+  //   this.usuarioForm.get('cadastro_contato_padrao.fone')?.valueChanges.subscribe(value => {
+  //     const organizar = value.replace(/\D/g, '');
+  //     if(organizar.length > 10) {
+  //       this.usuarioForm.get('fone')?.setValue(
+  //         organizar.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'),
+  //         { emitEvent: false }
+  //       );
+  //     } else {
+  //       this.usuarioForm.get('cadastro_contato_padrao.fone')?.setValue(
+  //         organizar.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3'),
+  //         { emitEvent: false }
+  //       );
+  //     }
+  //   });
+  // }
 }

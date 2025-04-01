@@ -18,13 +18,15 @@
       <tr *ngFor="let usuario of usuarios$ | async; let i = index">
         <td>{{ i + 1 }}</td>
         <td>{{ usuario.nome }}</td>
-        <td>{{ usuario.cadastro_contato_padrao.fone }}</td>
-        <td>{{ usuario.cadastro_contato_padrao.email }}</td>
-        <td>
-          <button class="btn btn-danger" (click)="editarUsuario(usuario)">Editar</button>
+        <td>{{ usuario.cadastro_contato_padrao?.fone || 'Não informado' }}</td>
+        <td>{{ usuario.cadastro_contato_padrao?.email }}</td>
+        <td class="acoes">
+          <div class="botoes-container">
+          <button class="btn btn-dark" (click)="editarUsuario(usuario)">Editar</button>
           <button class="btn btn-info" (click)="verMais(i)">
             {{ detalhesVisiveis.has(i) ? 'Ver menos' : 'Ver mais' }}
           </button>
+          </div>
         </td>
       </tr>
       <ng-container *ngFor="let usuario of usuarios$ | async; let i = index">

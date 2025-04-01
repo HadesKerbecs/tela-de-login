@@ -1,4 +1,7 @@
 <div class="form-container">
+  <h2 class="titulo-formulario">
+    {{ editando ? 'Editando Usuário' : 'Cadastrando Usuário' }}
+  </h2>
   <form
     @shownState
     class="formulario ff-prompt"
@@ -39,8 +42,8 @@
         [ngClass]="campoValidado('tipo_pessoa')"
       >
         <option disabled value="">Selecione</option>
-        <option value="fisica">Fisica</option>
-        <option value="juridica">Juridica</option>
+        <option value="Fisica">Fisica</option>
+        <option value="Juridica">Juridica</option>
       </select>
       <app-mensagem
         *ngIf="!validado"
@@ -56,9 +59,9 @@
         [ngClass]="campoValidado('tipo_cadastro')"
       >
         <option disabled value="">Selecione</option>
-        <option value="cliente">Cliente</option>
-        <option value="fornecedor">Fornecedor</option>
-        <option value="outro">Outro</option>
+        <option value="Cliente">Cliente</option>
+        <option value="Fornecedor">Fornecedor</option>
+        <option value="Outro">Outro</option>
       </select>
       <app-mensagem
         *ngIf="!validado"
@@ -99,9 +102,9 @@
         [ngClass]="campoValidado('tipo_regime_apuracao')"
       >
         <option disabled value="">Selecione</option>
-        <option value="simples">Simples</option>
-        <option value="lucro_presumido">Lucro Presumido</option>
-        <option value="lucro_real">Lucro Real</option>
+        <option value="Simples">Simples</option>
+        <option value="Lucro_presumido">Lucro Presumido</option>
+        <option value="Lucro_real">Lucro Real</option>
       </select>
       <app-mensagem
         *ngIf="!validado"
@@ -117,8 +120,8 @@
         [ngClass]="campoValidado('tipo_preco_venda')"
       >
         <option disabled value="">Selecione</option>
-        <option value="somentevenda">SomenteVenda</option>
-        <option value="outro">Outro</option>
+        <option value="SomenteVenda">SomenteVenda</option>
+        <option value="Outro">Outro</option>
       </select>
       <app-mensagem
         *ngIf="!validado"
@@ -435,11 +438,12 @@
         <button
           id="botao-salvar"
           type="submit"
-          (click)="editando ? editarUsuario() : criarUsuario()"
           class="botao-form btn btn-sucess"
           [ngClass]="habilitarSalvamento()"
+          [disabled]="!usuarioForm.valid"
+          (click)="editando ? editarUsuario() : criarUsuario()"
         >
-          Salvar
+          {{editando ? 'Editar' : 'Cadastrar'}}
         </button>
       </div>
       </div>

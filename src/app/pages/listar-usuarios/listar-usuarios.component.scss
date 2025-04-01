@@ -18,6 +18,17 @@ h2 {
   justify-content: space-between; // Alinha os botões
   margin-bottom: 15px;
 }
+.acoes {
+  text-align: right;
+  width: 20%;
+}
+
+.botoes-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 100%;
+}
 
 .btn {
   padding: 8px 12px;

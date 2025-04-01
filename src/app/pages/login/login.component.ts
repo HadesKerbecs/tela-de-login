@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       this.authLogin.conectarUsuario(credenciais).subscribe({
         next: (res) => {
           console.log('Login bem-sucedido!', res);
-          localStorage.setItem('token', res.access_token);
+          localStorage.setItem('access_token', res.access_token);
           console.log(res.access_token)
           this.router.navigate(['/listar-usuarios']);
         },

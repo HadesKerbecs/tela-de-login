@@ -22,12 +22,13 @@ export class ListarUsuariosComponent {
   ) {this.usuarios$ = this.service.usuarios$}
 
   ngOnInit(): void {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.log('Usuário não autenticado! Redirecionando para login.');
-      this.router.navigate(['/paginaLogin']);
+    const usuarioSalvo = localStorage.getItem('usuario');
+
+    if (usuarioSalvo) {
+      const usuario = JSON.parse(usuarioSalvo);
+      console.log("Usuário recuperado:", usuario);
+      this.atualizarLista(usuario);
     }
-    this.service.listar();
   }
 
   logout(): void{
@@ -36,7 +37,14 @@ export class ListarUsuariosComponent {
   }
 
   editarUsuario(usuario: CadastroRequest): void {
-    this.cadastroUsuario.abrirModalParaEdicao(usuario);
+    this.formAberto = true;
+    setTimeout(() => {
+      if (this.cadastroUsuario) {
+        this.cadastroUsuario.abrirModalParaEdicao(usuario);
+      } else {
+        console.error("Erro: cadastroUsuario ainda não foi inicializado.");
+      }
+    });
   }
 
   mostrarOuEsconderFormulario(): void {

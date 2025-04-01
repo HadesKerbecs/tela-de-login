@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { CadastrarUsuariosComponent } from './pages/cadastrar-usuarios/cadastrar-usuarios.component';
 import { ListarUsuariosComponent } from './pages/listar-usuarios/listar-usuarios.component';
+import { verificarAutenticacaoGuard } from './componentes/auth/verificar-autentificacao.guard';
 
 const routes: Routes = [
   {
@@ -16,11 +17,11 @@ const routes: Routes = [
   },
   {
     path: 'listar-usuarios',
-    component: ListarUsuariosComponent
+    component: ListarUsuariosComponent,
   },
   {
     path: 'cadastrar-usuarios',
-    component: CadastrarUsuariosComponent
+    component: CadastrarUsuariosComponent,
   }
 ];
 

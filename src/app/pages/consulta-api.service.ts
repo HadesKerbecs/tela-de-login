@@ -1,13 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LoginRequest, LoginResponse } from '../hooks/dados';
+import { CadastroRequest, LoginRequest, LoginResponse } from '../hooks/dados';
 import { Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConsultaApiAuthService {
-  apiUrl  = "https://desenvolvimento.maxdata.com.br/api/v1/auth";
+  apiUrl  = "https://desenvolvimento.maxdata.com.br/api/v1/Auth";
   constructor(private http: HttpClient) { }
 
   conectarUsuario(credenciais: LoginRequest): Observable<LoginResponse>{
@@ -16,14 +16,29 @@ export class ConsultaApiAuthService {
   };
 
 }
+
 @Injectable({
   providedIn: 'root'
 })
 export class ConsultaAPICadastroService {
-  apiUrl = "https://desenvolvimento.maxdata.com.br/api/v1/Cadastro"
-  constructor(private http: HttpClient) { }
-}
+   apiUrl = "https://desenvolvimento.maxdata.com.br/api/v1/Cadastro";
 
+  constructor(private http: HttpClient) {}
+
+  cadastrarUsuario(usuario: CadastroRequest): Observable<CadastroRequest> {
+    const token = localStorage.getItem('access_token');
+
+    console.log("Token recuperado:", token);
+    if (!token) {
+      console.error("Erro: Token de autenticação não encontrado.");
+      throw new Error("Token não encontrado.");
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.post<CadastroRequest>(this.apiUrl, usuario, { headers });
+  }
+}
 
 @Injectable({
   providedIn: 'root'

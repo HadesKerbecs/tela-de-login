@@ -1,46 +1,68 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CadastroRequest, LoginRequest,  LoginResponse } from '../hooks/dados';
-import { ConsultaApiAuthService, ConsultaAPICadastroService } from './consulta-api.service';
+import { CadastroRequest, LoginRequest, LoginResponse } from '../hooks/dados';
+import { ConsultaAPICadastroService } from './consulta-api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ValidacaoService {
-  conectarUsuario(credenciais: { email: any; senha: any; empresa_id: number; loja_id: number; }) {
-    throw new Error('Method not implemented.');
-  }
-  private usuariosCadastrados = new BehaviorSubject<CadastroRequest[]>([])
+  private usuariosCadastrados = new BehaviorSubject<CadastroRequest[]>([]);
   usuarios$ = this.usuariosCadastrados.asObservable();
 
   constructor(
     private http: HttpClient,
+    private consultaAPICadastroService: ConsultaAPICadastroService,
     private cadastrarUsuario: ConsultaAPICadastroService
-  ) { }
+  ) {}
 
   listar(): void {
+    const token = localStorage.getItem('access_token');
+
+    if (!token) {
+      console.error("Erro: Token não encontrado. Usuário não está autenticado.");
+      return;
+    }
+
     let params = new HttpParams().appendAll({
       _sort: 'cadastro_tipo_id',
       _order: 'asc',
     });
-    this.http.get<CadastroRequest[]>(this.cadastrarUsuario.apiUrl, { params }).subscribe((usuarios) =>{
-      let listaDeUsuarios = this.usuariosCadastrados.getValue();
-      listaDeUsuarios = listaDeUsuarios.concat(usuarios)
-      this.usuariosCadastrados.next(listaDeUsuarios);
-    })
+
+    let headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    this.http.get<CadastroRequest[]>(this.cadastrarUsuario.apiUrl, { headers, params }).subscribe({
+      next: (usuarios) => {
+        let listaDeUsuarios = this.usuariosCadastrados.getValue();
+        listaDeUsuarios = listaDeUsuarios.concat(usuarios);
+        this.usuariosCadastrados.next(listaDeUsuarios);
+      },
+      error: (err) => {
+        console.error("Erro ao buscar usuários:", err);
+      }
+    });
   }
 
   cadastrar(usuario: CadastroRequest): void {
-    this.http.post<CadastroRequest>(this.cadastrarUsuario.apiUrl, usuario).subscribe(novoUsuario => {
-      const usuarios = this.usuariosCadastrados.getValue();
-      usuarios.unshift(novoUsuario)
-      this.usuariosCadastrados.next(usuarios);
+    console.log("Iniciando cadastro do usuário:", usuario);
+
+    this.consultaAPICadastroService.cadastrarUsuario(usuario).subscribe({
+      next: (novoUsuario) => {
+        console.log("Usuário cadastrado com sucesso:", novoUsuario);
+        this.usuariosCadastrados.next([...this.usuariosCadastrados.getValue(), novoUsuario]);
+      },
+      error: (err) => {
+        console.error("Erro ao cadastrar usuário:", err);
+      }
     });
   }
 
   buscarPorId(cadastro_tipo_id: number): Observable<CadastroRequest> {
-    const url = `${this.cadastrarUsuario.apiUrl}/${cadastro_tipo_id}`;
+    const url = `${this.consultaAPICadastroService.apiUrl}/${cadastro_tipo_id}`;
     return this.http.get<CadastroRequest>(url);
   }
 
