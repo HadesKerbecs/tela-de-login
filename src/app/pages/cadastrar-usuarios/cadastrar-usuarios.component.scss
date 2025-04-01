@@ -22,9 +22,6 @@
   background: #FFFFFF;
   border: 1px solid #7b6c7d;
   box-sizing: border-box;
-  //  display: flex;
-  // flex-direction: row;
-  // align-items: center;
   width: 100%;
   height: 40px;
   padding-left: 8px;
@@ -32,8 +29,8 @@
 }
 
 .input-invalido {
-  border-color: red!important;
-  margin-bottom: 0!important;
+  border-color: red !important;
+  margin-bottom: 0 !important;
 }
 
 .botao-salvar {
@@ -48,5 +45,37 @@
 .botoes-container {
   display: flex;
   justify-content: space-between;
+}
 
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+.radio-label {
+  font-size: 16px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.radio-options {
+  display: flex;
+  gap: 20px;
+}
+
+.radio-options input[type="radio"] {
+  width: 16px;
+  height: 16px; 
+  margin: 0 4px 0 0;
+}
+
+.radio-options label {
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
 }

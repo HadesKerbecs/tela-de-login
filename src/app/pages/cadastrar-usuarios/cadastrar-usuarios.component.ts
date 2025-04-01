@@ -26,7 +26,7 @@ export class CadastrarUsuariosComponent implements OnInit {
     tipo_pessoa: ['', Validators.required],
     tipo_cadastro: ['', Validators.required],
     cpf_cnpj: ['', [Validators.required, Validators.pattern(/^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})$/)]],
-    rg_ie: ['', [Validators.required, Validators.pattern(/^[0-9]{9}$/)]],
+    rg_ie: ['', Validators.required],
     tipo_regime_apuracao: ['', Validators.required],
     tipo_preco_venda: ['', Validators.required],
 
@@ -73,31 +73,35 @@ export class CadastrarUsuariosComponent implements OnInit {
 
   etapaValida(): boolean {
     if (this.etapaAtual === 1) {
-      return (
-        (this.usuarioForm.get('nome')?.valid ?? false) &&
-        (this.usuarioForm.get('fantasia')?.valid ?? false) &&
-        (this.usuarioForm.get('tipo_pessoa')?.valid ?? false) &&
-        (this.usuarioForm.get('tipo_cadastro')?.valid ?? false) &&
-        (this.usuarioForm.get('cpf_cnpj')?.valid ?? false) &&
-        (this.usuarioForm.get('rg_ie')?.valid ?? false) &&
-        (this.usuarioForm.get('tipo_regime_apuracao')?.valid ?? false) &&
-        (this.usuarioForm.get('tipo_preco_venda')?.valid ?? false)
-      );
-    } else if (this.etapaAtual === 2) {
-      return (this.usuarioForm.get('cadastro_endereco_padrao.descricao')?.valid ?? false);
-    } else if (this.etapaAtual === 3) {
-      return (this.usuarioForm.get('cadastro_contato_padrao.email')?.valid ?? false);
+      const campos = ['nome', 'fantasia', 'tipo_pessoa', 'tipo_cadastro', 
+                    'cpf_cnpj', 'rg_ie', 'tipo_regime_apuracao', 'tipo_preco_venda'];
+      return campos.every(campo => this.usuarioForm.get(campo)?.valid);
+    }
+    else if (this.etapaAtual === 2) {
+      const enderecoGroup = this.usuarioForm.get('cadastro_endereco_padrao') as FormGroup;
+      const campos = ['descricao', 'endereco', 'endereco_numero', 
+                     'endereco_bairro', 'endereco_cep', 'principal', 'cobranca'];
+      return campos.every(campo => enderecoGroup.get(campo)?.valid);
+    }
+    else if (this.etapaAtual === 3) {
+      const contatoGroup = this.usuarioForm.get('cadastro_contato_padrao') as FormGroup;
+      const campos = ['descricao', 'fone', 'email', 
+                     'enviar_orcamento', 'enviar_nf', 'enviar_boleto'];
+      return campos.every(campo => contatoGroup.get(campo)?.valid);
     }
     return false;
   }
 
-
-  habilitarBotao(): string {
+  habilitarSalvamento(): string {
     if (this.usuarioForm.valid) {
       return 'botao-salvar';
     } else {
       return 'botao-desabilitado';
     }
+  }
+
+  habilitarAvanco(): string {
+    return this.etapaValida() ? 'botao-salvar' : 'botao-desabilitado';
   }
 
   cancelarCadastro() {
@@ -122,7 +126,7 @@ export class CadastrarUsuariosComponent implements OnInit {
   }
 
   proximaEtapa() {
-    if (this.etapaAtual < 3) {
+    if (this.etapaAtual < 3 && this.etapaValida()) {
       this.etapaAtual++;
     }
   }
@@ -182,10 +186,10 @@ export class CadastrarUsuariosComponent implements OnInit {
     });
 
     this.usuarioForm.get('rg_ie')?.valueChanges.subscribe(value => {
-    const organizar = value.replace(/\D/g, '');
-    if(organizar.length <= 9) {
-    this.usuarioForm.get('rg_ie')?.setValue(organizar, { emitEvent: false });
-    }
+      const apenasNumeros = value.replace(/\D/g, '');
+      if (value !== apenasNumeros) {
+        this.usuarioForm.get('rg_ie')?.setValue(apenasNumeros, { emitEvent: false });
+      }
     });
 
     this.usuarioForm.get('cadastro_contato_padrao.fone')?.valueChanges.subscribe(value => {

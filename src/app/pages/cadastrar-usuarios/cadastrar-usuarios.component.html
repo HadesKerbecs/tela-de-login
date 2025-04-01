@@ -126,7 +126,7 @@
       >
       </app-mensagem>
       <div class="botoes-container">
-        <button type="button" (click)="proximaEtapa()" class="btn btn-success" [disabled]="!etapaValida">
+        <button type="button" (click)="proximaEtapa()" class="btn btn-success" [disabled]="!etapaValida" [ngClass]="habilitarAvanco()">
           Avançar
         </button>
         <button
@@ -225,7 +225,9 @@
       />
 
       <!-- ENDEREÇO PRINCIPAL -->
+    <div class="radio-group">
       <label for="principal">Endereço principal?</label>
+      <div class="radio-options">
       <label>
         <input
           required
@@ -244,7 +246,8 @@
           [ngClass]="campoValidado('principal')"
         />Não
       </label>
-
+    </div>
+    </div>
       <app-mensagem
         *ngIf="!validado"
         mensagemValidacao="Informe se é seu endereço principal"
@@ -252,7 +255,9 @@
       </app-mensagem>
 
       <!-- COBRANÇA -->
+      <div class="radio-group">
       <label for="cobranca">Endereço de cobrança?</label>
+      <div class="radio-options">
       <label>
         <input
           required
@@ -271,6 +276,8 @@
           [ngClass]="campoValidado('cobranca')"
         />Não
       </label>
+      </div>
+    </div>
 
       <app-mensagem
         *ngIf="!validado"
@@ -290,7 +297,7 @@
         Voltar
       </button>
 
-      <button type="button" (click)="proximaEtapa()" class="btn btn-success" [disabled]="!etapaValida">
+      <button type="button" (click)="proximaEtapa()" class="btn btn-success" [disabled]="!etapaValida" [ngClass]="habilitarAvanco()">
         Avançar
       </button>
       </div>
@@ -341,9 +348,9 @@
       </app-mensagem>
 
       <!-- ENVIAR ORÇAMENTO -->
-      <label for="enviar_orcamento"
-        >O email inserido é para mandar o orçamento?</label
-      >
+      <div class="radio-group">
+      <label for="enviar_orcamento">O email inserido é para mandar o orçamento?</label>
+      <div class="radio-options">
       <label>
         <input
           required
@@ -362,14 +369,16 @@
           [ngClass]="campoValidado('enviar_orcamento')"
         />Não
       </label>
+      </div>
+      </div>
 
       <app-mensagem *ngIf="!validado" mensagemValidacao="Selecione um campo">
       </app-mensagem>
 
       <!-- ENVIAR NOTA FISCAL -->
-      <label for="enviar_nf"
-        >O email inserido é para mandar a nota fiscal?</label
-      >
+      <div class="radio-group">
+      <label for="enviar_nf">O email inserido é para mandar a nota fiscal?</label>
+      <div class="radio-options">
       <label>
         <input
           required
@@ -388,11 +397,13 @@
           [ngClass]="campoValidado('enviar_nf')"
         />Não
       </label>
+      </div>
+      </div>
 
       <!-- ENVIAR BOLETO -->
-      <label for="enviar_boleto"
-        >O email inserido é para mandar o boleto?</label
-      >
+      <div class="radio-group">
+      <label for="enviar_boleto">O email inserido é para mandar o boleto?</label>
+      <div class="radio-options">
       <label>
         <input
           required
@@ -411,6 +422,8 @@
           [ngClass]="campoValidado('enviar_boleto')"
         />Não
       </label>
+      </div>
+      </div>
 
       <app-mensagem *ngIf="!validado" mensagemValidacao="Selecione um campo">
       </app-mensagem>
@@ -424,7 +437,7 @@
           type="submit"
           (click)="editando ? editarUsuario() : criarUsuario()"
           class="botao-form btn btn-sucess"
-          [ngClass]="habilitarBotao()"
+          [ngClass]="habilitarSalvamento()"
         >
           Salvar
         </button>
