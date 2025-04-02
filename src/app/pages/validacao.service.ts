@@ -1,81 +1,111 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { CadastroRequest, LoginRequest, LoginResponse } from '../hooks/dados';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Injectable, OnInit } from '@angular/core';
+import { BehaviorSubject, Observable, catchError, tap, throwError } from 'rxjs';
+import { CadastroRequest, CadastroResponse } from '../hooks/dados';
 import { ConsultaAPICadastroService } from './consulta-api.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class ValidacaoService {
+export class ValidacaoService implements OnInit {
   private usuariosCadastrados = new BehaviorSubject<CadastroRequest[]>([]);
   usuarios$ = this.usuariosCadastrados.asObservable();
 
-  constructor(
-    private http: HttpClient,
-    private consultaAPICadastroService: ConsultaAPICadastroService,
-    private cadastrarUsuario: ConsultaAPICadastroService
-  ) {}
+  constructor(private http: HttpClient, private consultaAPICadastroService: ConsultaAPICadastroService) {}
 
   listar(): void {
     const token = localStorage.getItem('access_token');
-
     if (!token) {
-      console.error("Erro: Token não encontrado. Usuário não está autenticado.");
+      console.error('❌ Erro: Token não encontrado.');
       return;
     }
 
-    let params = new HttpParams().appendAll({
-      _sort: 'cadastro_tipo_id',
-      _order: 'asc',
+    const params = new HttpParams().appendAll({ _sort: 'id', _order: 'asc' });
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     });
 
-    let headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-
-    this.http.get<CadastroRequest[]>(this.cadastrarUsuario.apiUrl, { headers, params }).subscribe({
-      next: (usuarios) => {
-        let listaDeUsuarios = this.usuariosCadastrados.getValue();
-        listaDeUsuarios = listaDeUsuarios.concat(usuarios);
-        this.usuariosCadastrados.next(listaDeUsuarios);
+    this.http.get<CadastroResponse>(this.consultaAPICadastroService.apiUrl, { headers, params }).subscribe({
+      next: (response) => {
+        console.log('📌 Usuários obtidos:', response);
+        this.usuariosCadastrados.next(response.itens || []);
       },
-      error: (err) => {
-        console.error("Erro ao buscar usuários:", err);
-      }
+      error: (err) => console.error('❌ Erro ao listar usuários:', err),
     });
+  }
+
+  ngOnInit(): void {
+    this.listar();
   }
 
   cadastrar(usuario: CadastroRequest): void {
-    console.log("Iniciando cadastro do usuário:", usuario);
+    const token = localStorage.getItem('access_token');
 
-    this.consultaAPICadastroService.cadastrarUsuario(usuario).subscribe({
-      next: (novoUsuario) => {
-        console.log("Usuário cadastrado com sucesso:", novoUsuario);
-        this.usuariosCadastrados.next([...this.usuariosCadastrados.getValue(), novoUsuario]);
-      },
-      error: (err) => {
-        console.error("Erro ao cadastrar usuário:", err);
-      }
+    if (!token) {
+      console.error('❌ Erro: Token não encontrado.');
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     });
+
+    console.log('📤 Enviando dados:', JSON.stringify(usuario, null, 2));
+
+    this.http
+      .post<CadastroRequest>(this.consultaAPICadastroService.apiUrl, usuario, { headers })
+      .subscribe({
+        next: (novoUsuario) => {
+          console.log('✅ Cadastro realizado:', novoUsuario);
+          const usuariosAtuais = this.usuariosCadastrados.getValue();
+          this.usuariosCadastrados.next([...usuariosAtuais, novoUsuario]);
+          this.listar();
+        },
+        error: (error) => {
+          console.error('❌ Erro ao cadastrar usuário:', error);
+          console.error('🔴 Status HTTP:', error.status);
+          console.error('🔴 Corpo da resposta:', error.error);
+        },
+      });
   }
 
-  buscarPorId(cadastro_tipo_id: number): Observable<CadastroRequest> {
-    const url = `${this.consultaAPICadastroService.apiUrl}/${cadastro_tipo_id}`;
+  buscarPorId(id: number): Observable<CadastroRequest> {
+    const url = `${this.consultaAPICadastroService.apiUrl}/${id}`;
     return this.http.get<CadastroRequest>(url);
   }
 
   editar(usuario: CadastroRequest, atualizarSubject: boolean): void {
-    this.http.put<CadastroRequest>(`${this.cadastrarUsuario.apiUrl}/${usuario.cadastro_tipo_id}`, usuario).subscribe(usuarioEditado => {
-      if(atualizarSubject){
-        const usuarios = this.usuariosCadastrados.getValue();
-        const index = usuarios.findIndex(t => t.cadastro_tipo_id === usuarioEditado.cadastro_tipo_id);
-        if (index !== -1) {
-          usuarios[index] = usuarioEditado;
-          this.usuariosCadastrados.next(usuarios);
-        }
-      }
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     });
-  }
+
+    console.log("Tentando editar usuário:", usuario);
+    console.log("URL da API:", `${this.consultaAPICadastroService.apiUrl}/${usuario.id}`);
+    console.log("Dados que estão sendo enviados:", JSON.stringify(usuario, null, 2));
+    const body = JSON.stringify(usuario);
+
+    this.http.put<CadastroRequest>(`${this.consultaAPICadastroService.apiUrl}/${usuario.id}`, body, { headers })
+      .subscribe({
+        next: (usuarioEditado) => {
+          console.log("Usuário editado com sucesso:", usuarioEditado);
+          if (atualizarSubject) {
+            const tarefas = this.usuariosCadastrados.getValue();
+            const index = tarefas.findIndex(user => user.id === usuarioEditado.id);
+            if (index !== -1) {
+              tarefas[index] = usuarioEditado;
+              this.usuariosCadastrados.next(tarefas);
+            }
+          }
+        },
+        error: (erro) => {
+          console.error("Erro ao editar usuário:", erro);
+        }
+      });
+}
+
+
 }

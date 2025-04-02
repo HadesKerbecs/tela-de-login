@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CadastroRequest } from 'src/app/hooks/dados';
@@ -10,7 +10,7 @@ import { CadastrarUsuariosComponent } from '../cadastrar-usuarios/cadastrar-usua
   templateUrl: './listar-usuarios.component.html',
   styleUrls: ['./listar-usuarios.component.scss']
 })
-export class ListarUsuariosComponent {
+export class ListarUsuariosComponent implements OnInit {
   @ViewChild(CadastrarUsuariosComponent) cadastroUsuario!: CadastrarUsuariosComponent;
   formAberto: boolean = false;
   usuarios$: Observable<CadastroRequest[]>;
@@ -19,16 +19,12 @@ export class ListarUsuariosComponent {
   constructor(
     private router: Router,
     private service: ValidacaoService
-  ) {this.usuarios$ = this.service.usuarios$}
+  ) {
+    this.usuarios$ = this.service.usuarios$;
+  }
 
   ngOnInit(): void {
-    const usuarioSalvo = localStorage.getItem('usuario');
-
-    if (usuarioSalvo) {
-      const usuario = JSON.parse(usuarioSalvo);
-      console.log("Usuário recuperado:", usuario);
-      this.atualizarLista(usuario);
-    }
+    this.service.listar();
   }
 
   logout(): void{
