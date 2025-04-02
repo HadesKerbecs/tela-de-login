@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CadastroRequest, LoginRequest, LoginResponse } from '../hooks/dados';
+import { CadastroRequest } from '../hooks/dados';
 import { ConsultaAPICadastroService } from './consulta-api.service';
 
 @Injectable({
@@ -13,52 +13,63 @@ export class ValidacaoService {
 
   constructor(
     private http: HttpClient,
-    private consultaAPICadastroService: ConsultaAPICadastroService,
-    private cadastrarUsuario: ConsultaAPICadastroService
+    private consultaAPICadastroService: ConsultaAPICadastroService
   ) {}
 
+  // Método para buscar a lista de usuários via GET
   listar(): void {
     const token = localStorage.getItem('access_token');
-
     if (!token) {
       console.error("Erro: Token não encontrado. Usuário não está autenticado.");
       return;
     }
 
-    let params = new HttpParams().appendAll({
+    const params = new HttpParams().appendAll({
       _sort: 'cadastro_tipo_id',
-      _order: 'asc',
+      _order: 'asc'
     });
 
-    let headers = new HttpHeaders({
+    const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
 
-    this.http.get<CadastroRequest[]>(this.cadastrarUsuario.apiUrl, { headers, params }).subscribe({
-      next: (usuarios) => {
-        let listaDeUsuarios = this.usuariosCadastrados.getValue();
-        listaDeUsuarios = listaDeUsuarios.concat(usuarios);
-        this.usuariosCadastrados.next(listaDeUsuarios);
-      },
-      error: (err) => {
-        console.error("Erro ao buscar usuários:", err);
-      }
-    });
+    // Supondo que a resposta da API seja do tipo: { success: true, itens: [...], paginacao: {...}, total: ... }
+    this.http.get<any>(this.consultaAPICadastroService.apiUrl, { headers, params })
+      .subscribe({
+        next: (response) => {
+          console.log("Resposta da API:", response);
+          // Extrai o array de usuários a partir da propriedade "itens"
+          const usuarios: CadastroRequest[] = response.itens || [];
+          this.usuariosCadastrados.next(usuarios);
+        },
+        error: (err) => {
+          console.error("Erro ao listar usuários:", err);
+        }
+      });
   }
 
+  // Método para cadastrar um usuário via POST
   cadastrar(usuario: CadastroRequest): void {
     console.log("Iniciando cadastro do usuário:", usuario);
 
-    this.consultaAPICadastroService.cadastrarUsuario(usuario).subscribe({
-      next: (novoUsuario) => {
-        console.log("Usuário cadastrado com sucesso:", novoUsuario);
-        this.usuariosCadastrados.next([...this.usuariosCadastrados.getValue(), novoUsuario]);
-      },
-      error: (err) => {
-        console.error("Erro ao cadastrar usuário:", err);
-      }
-    });
+    this.consultaAPICadastroService.cadastrarUsuario(usuario)
+      .subscribe({
+        next: (novoUsuario) => {
+          console.log("Usuário cadastrado com sucesso:", novoUsuario);
+          // Após cadastrar, atualiza a lista de usuários
+          this.listar();
+        },
+        error: (err) => {
+          console.error("Erro ao cadastrar usuário:", err);
+          if (err.error) {
+            console.error("Detalhes do erro:", err.error);
+            if (err.error.errors) {
+              console.error("Erros específicos:", err.error.errors);
+            }
+          }
+        }
+      });
   }
 
   buscarPorId(cadastro_tipo_id: number): Observable<CadastroRequest> {
@@ -66,16 +77,31 @@ export class ValidacaoService {
     return this.http.get<CadastroRequest>(url);
   }
 
-  editar(usuario: CadastroRequest, atualizarSubject: boolean): void {
-    this.http.put<CadastroRequest>(`${this.cadastrarUsuario.apiUrl}/${usuario.cadastro_tipo_id}`, usuario).subscribe(usuarioEditado => {
-      if(atualizarSubject){
-        const usuarios = this.usuariosCadastrados.getValue();
-        const index = usuarios.findIndex(t => t.cadastro_tipo_id === usuarioEditado.cadastro_tipo_id);
-        if (index !== -1) {
-          usuarios[index] = usuarioEditado;
-          this.usuariosCadastrados.next(usuarios);
-        }
+  // Método para editar um usuário via PUT
+  editar(usuario: CadastroRequest): void {
+    const token = localStorage.getItem('access_token');
+    console.log("Token utilizado:", token);
+    if (!token) {
+      console.error("Erro: Token não encontrado.");
+      return;
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+    this.http.put<CadastroRequest>(
+      `${this.consultaAPICadastroService.apiUrl}/${usuario.cadastro_tipo_id}`, 
+      usuario, 
+      { headers }
+    ).subscribe({
+      next: (usuarioEditado) => {
+        console.log("Usuário editado com sucesso:", usuarioEditado);
+        this.listar();
+      },
+      error: (err) => {
+        console.error("Erro ao editar usuário:", err);
       }
     });
+    console.log("ID do usuário para edição:", usuario.cadastro_tipo_id);
   }
 }

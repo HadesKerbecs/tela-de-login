@@ -207,7 +207,6 @@
         placeholder="Insira seu CEP"
         [ngClass]="campoValidado('endereco_cep')"
         validadorCep
-        (blur)="consultaCEP($event)"
       />
       <app-mensagem
         *ngIf="!validado"

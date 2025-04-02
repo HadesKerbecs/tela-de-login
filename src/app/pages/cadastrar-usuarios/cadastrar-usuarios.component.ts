@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { disappearStateTrigger, shownStateTrigger } from 'src/app/animations';
 import { ValidacaoService } from '../validacao.service';
 import { CadastroRequest } from 'src/app/hooks/dados';
-import { ConsultaCepService } from '../consulta-api.service';
 
 @Component({
   selector: 'app-cadastrar-usuarios',
@@ -25,8 +24,8 @@ export class CadastrarUsuariosComponent implements OnInit {
     nome: ['', Validators.required],
     fantasia: ['', Validators.required],
     tipo_pessoa: ['', Validators.required],
-    tipo_cadastro: ['', Validators.required],
-    cadastro_tipo_id: [2, Validators.required],
+    tipo_cadastro: [2, Validators.required],
+    cadastro_tipo_id: ['', Validators.required],
     cpf_cnpj: ['', [Validators.required, Validators.pattern(/^\d{11}$|^\d{14}$/)]],
     // (/^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})$/)
     rg_ie: ['', Validators.required],
@@ -58,7 +57,8 @@ export class CadastrarUsuariosComponent implements OnInit {
     }),
   });
 
-  constructor(private fb: FormBuilder, private service: ValidacaoService, private consultaCepService: ConsultaCepService) {}
+  constructor(private fb: FormBuilder, private service: ValidacaoService) {}
+  // private consultaCepService: ConsultaCepService
 
   ngOnInit(): void {
     // this.camposAutomaticos();
@@ -123,33 +123,22 @@ export class CadastrarUsuariosComponent implements OnInit {
     }
   }
 
-  criarUsuario() {
-    console.log("Tentando criar usuário...");
-    this.editando = false;
-    if (this.usuarioForm.valid) {
-      const novoUsuario = this.usuarioForm.value;
-      console.log("Dados do usuário:", novoUsuario);
-
-      // this.usuarioCadastrado.emit(novoUsuario);
-      this.service.cadastrar(novoUsuario);
-
-      localStorage.setItem('usuario', JSON.stringify(novoUsuario));
-
-      this.usuarioForm.reset();
-      this.formAberto = !this.formAberto;
-      alert('Usuário cadastrado!')
-    } else {
-      console.error("Formulário inválido!");
-    }
+  criarUsuario(): void {
+    const novoUsuario: CadastroRequest = this.usuarioForm.value;
+    console.log("Dados do usuário:", novoUsuario);
+    this.service.cadastrar(novoUsuario);
+    // Emite para o componente pai se necessário
+    this.usuarioCadastrado.emit(novoUsuario);
+    this.usuarioForm.reset();
+    this.formAberto = false;
+    alert('Usuário cadastrado!');
   }
 
   editarUsuario(): void {
-    if (this.usuarioForm.valid) {
-      const usuarioEditado: CadastroRequest = this.usuarioForm.value;
-      console.log('Dados antes de editar:', usuarioEditado);
-      this.service.editar(usuarioEditado, true);
-      this.formAberto = false;
-    }
+    const usuarioEditado: CadastroRequest = this.usuarioForm.value;
+    console.log('Dados antes de editar:', usuarioEditado);
+    this.service.editar(usuarioEditado);
+    this.formAberto = false;
   }
 
   abrirModalParaEdicao(usuario: CadastroRequest) {
@@ -171,19 +160,19 @@ export class CadastrarUsuariosComponent implements OnInit {
     }
   }
 
-  consultaCEP(evento: any){
-    const cep = evento.target.value.replace(/\D/g, '');
+  // consultaCEP(evento: any){
+  //   const cep = evento.target.value.replace(/\D/g, '');
 
-    if (cep.length === 8) {
-    this.consultaCepService.getConsultaCep(cep).subscribe((resultado: any) => {
-      if (!resultado.erro) {
-        this.populandoEndereco(resultado);
-      } else {
-        alert('CEP não encontrado!');
-      }
-    });
-  }
-  }
+  //   if (cep.length === 8) {
+  //   this.consultaCepService.getConsultaCep(cep).subscribe((resultado: any) => {
+  //     if (!resultado.erro) {
+  //       this.populandoEndereco(resultado);
+  //     } else {
+  //       alert('CEP não encontrado!');
+  //     }
+  //   });
+  // }
+  // }
 
   populandoEndereco(dados: any) {
     this.usuarioForm.patchValue({
