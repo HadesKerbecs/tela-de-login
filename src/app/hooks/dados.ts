@@ -11,36 +11,43 @@ export interface LoginResponse {
 }
 
 export interface CadastroRequest {
-  nome: string;
-  fantasia: string;
-  tipo_pessoa: 'Fisica' | 'Juridica';
-  tipo_cadastro: 'Cliente' | 'Fornecedor' | 'Outro';
+  id: number;
+  cadastro_id?: number;
+  nome?: string;
+  fantasia?: string;
+  tipo_pessoa?: 'Fisica' | 'Juridica';
+  tipo_cadastro?: 'Cliente' | 'Fornecedor' | 'Outro';
+  cpf_cnpj?: string;
   cadastro_tipo_id: number;
-  cpf_cnpj: string;
-  rg_ie: string;
-  tipo_regime_apuracao: 'Simples' | 'Lucro Presumido' | 'Lucro Real';
-  tipo_preco_venda: 'SomenteVenda' | 'Outro';
-  cadastro_endereco_padrao: CadastroEndereco;
-  cadastro_contato_padrao: CadastroContato;
+  rg_ie?: string;
+  tipo_regime_apuracao?: 'Simples' | 'Lucro Presumido' | 'Lucro Real';
+  tipo_preco_venda?: 'SomenteVenda' | 'Outro';
+  cadastro_endereco_padrao?: CadastroEndereco;
+  cadastro_contato_padrao?: CadastroContato;
 }
 
 export interface CadastroEndereco {
-  descricao: string;
-  endereco: string;
-  endereco_numero: string;
-  endereco_bairro: string;
-  endereco_cep: string;
-  endereco_municipio_codigo_ibge: number;
-  principal: boolean;
-  cobranca: boolean;
-  ie_produtor_rural: string;
+  descricao?: string;
+  endereco?: string;
+  endereco_numero?: string;
+  endereco_bairro?: string;
+  endereco_cep?: string;
+  endereco_municipio_codigo_ibge?: number;
+  principal?: boolean;
+  cobranca?: boolean;
+  ie_produtor_rural?: string;
 }
 
 export interface CadastroContato {
-  descricao: string;
-  fone: string;
-  email: string;
-  enviar_orcamento: boolean;
-  enviar_nf: boolean;
-  enviar_boleto: boolean;
+  descricao?: string;
+  fone?: string;
+  email?: string;
+  enviar_orcamento?: boolean;
+  enviar_nf?: boolean;
+  enviar_boleto?: boolean;
+}
+
+export interface CadastroResponse {
+  itens: CadastroRequest[];
+  total: number;
 }

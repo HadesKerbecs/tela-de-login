@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { disappearStateTrigger, shownStateTrigger } from 'src/app/animations';
 import { ValidacaoService } from '../validacao.service';
 import { CadastroRequest } from 'src/app/hooks/dados';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-cadastrar-usuarios',
@@ -21,6 +22,7 @@ export class CadastrarUsuariosComponent implements OnInit {
   editando: boolean = false;
 
   usuarioForm: FormGroup = this.fb.group({
+    id: [null],
     nome: ['', Validators.required],
     fantasia: ['', Validators.required],
     tipo_pessoa: ['', Validators.required],
@@ -48,7 +50,7 @@ export class CadastrarUsuariosComponent implements OnInit {
 
     cadastro_contato_padrao: this.fb.group({
       descricao: ['', Validators.required],
-      fone: ['', [Validators.required, Validators.pattern(/^\d{10,11}$/)]],
+      fone: ['', Validators.required],
       // (/^\(\d{2}\) \d{4,5}-\d{4}$/)
       email: ['', [Validators.required, Validators.email]],
       enviar_orcamento: [null, Validators.required],
@@ -58,11 +60,24 @@ export class CadastrarUsuariosComponent implements OnInit {
   });
 
   constructor(private fb: FormBuilder, private service: ValidacaoService) {}
-  // private consultaCepService: ConsultaCepService
-
   ngOnInit(): void {
     // this.camposAutomaticos();
+    this.gerarNovoId();
   }
+  async gerarNovoId(): Promise<void> {
+    try {
+      const usuariosAtuais = await firstValueFrom(this.service.usuarios$);
+
+      const novoId = usuariosAtuais?.length
+        ? Math.max(...usuariosAtuais.map(u => u.id ?? 0)) + 1
+        : 1;
+
+      this.usuarioForm.patchValue({ id: novoId });
+    } catch (error) {
+      console.error('Erro ao gerar ID:', error);
+    }
+  }
+
 
   campoValidado(campoAtual: string): string {
     if (
@@ -127,7 +142,6 @@ export class CadastrarUsuariosComponent implements OnInit {
     const novoUsuario: CadastroRequest = this.usuarioForm.value;
     console.log("Dados do usuário:", novoUsuario);
     this.service.cadastrar(novoUsuario);
-    // Emite para o componente pai se necessário
     this.usuarioCadastrado.emit(novoUsuario);
     this.usuarioForm.reset();
     this.formAberto = false;
@@ -136,10 +150,26 @@ export class CadastrarUsuariosComponent implements OnInit {
 
   editarUsuario(): void {
     const usuarioEditado: CadastroRequest = this.usuarioForm.value;
-    console.log('Dados antes de editar:', usuarioEditado);
+    console.log('🔍 Testando GET antes da edição...');
+this.verificarPermissaoEdicao(usuarioEditado.id);
+
+    if (!usuarioEditado.id) {
+      console.error("❌ Erro: ID do usuário não foi preenchido.");
+      return;
+    }
+
+    console.log('📝 Dados antes de editar:', usuarioEditado);
     this.service.editar(usuarioEditado);
     this.formAberto = false;
-  }
+}
+
+verificarPermissaoEdicao(id: number): void {
+  console.log("🔍 Verificando acesso ao usuário ID:", id);
+  this.service.consultarUsuario(id);
+}
+
+
+
 
   abrirModalParaEdicao(usuario: CadastroRequest) {
     this.usuarioForm.patchValue(usuario);
@@ -160,20 +190,6 @@ export class CadastrarUsuariosComponent implements OnInit {
     }
   }
 
-  // consultaCEP(evento: any){
-  //   const cep = evento.target.value.replace(/\D/g, '');
-
-  //   if (cep.length === 8) {
-  //   this.consultaCepService.getConsultaCep(cep).subscribe((resultado: any) => {
-  //     if (!resultado.erro) {
-  //       this.populandoEndereco(resultado);
-  //     } else {
-  //       alert('CEP não encontrado!');
-  //     }
-  //   });
-  // }
-  // }
-
   populandoEndereco(dados: any) {
     this.usuarioForm.patchValue({
       cadastro_endereco_padrao: {
@@ -184,43 +200,4 @@ export class CadastrarUsuariosComponent implements OnInit {
       }
     });
   }
-
-  // private camposAutomaticos(): void {
-  //   this.usuarioForm.get('cpf_cnpj')?.valueChanges.subscribe(value => {
-  //     const organizar = value.replace(/\D/g, '');
-  //     if(organizar.length <= 11) {
-  //       this.usuarioForm.get('cpf_cnpj')?.setValue(
-  //         organizar.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4'),
-  //         { emitEvent: false }
-  //       );
-  //     } else {
-  //       this.usuarioForm.get('cpf_cnpj')?.setValue(
-  //         organizar.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5'),
-  //         {emitEvent: false}
-  //       );
-  //     }
-  //   });
-
-  //   this.usuarioForm.get('rg_ie')?.valueChanges.subscribe(value => {
-  //     const apenasNumeros = value.replace(/\D/g, '');
-  //     if (value !== apenasNumeros) {
-  //       this.usuarioForm.get('rg_ie')?.setValue(apenasNumeros, { emitEvent: false });
-  //     }
-  //   });
-
-  //   this.usuarioForm.get('cadastro_contato_padrao.fone')?.valueChanges.subscribe(value => {
-  //     const organizar = value.replace(/\D/g, '');
-  //     if(organizar.length > 10) {
-  //       this.usuarioForm.get('fone')?.setValue(
-  //         organizar.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'),
-  //         { emitEvent: false }
-  //       );
-  //     } else {
-  //       this.usuarioForm.get('cadastro_contato_padrao.fone')?.setValue(
-  //         organizar.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3'),
-  //         { emitEvent: false }
-  //       );
-  //     }
-  //   });
-  // }
 }
