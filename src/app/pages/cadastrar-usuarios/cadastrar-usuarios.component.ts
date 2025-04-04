@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { disappearStateTrigger, shownStateTrigger } from 'src/app/animations';
@@ -13,9 +13,9 @@ import { firstValueFrom } from 'rxjs';
   animations: [shownStateTrigger, disappearStateTrigger],
 })
 export class CadastrarUsuariosComponent implements OnInit {
-  // Emite o usuário cadastrado para o componente pai
   @Output() usuarioCadastrado = new EventEmitter<CadastroRequest>();
   @Output() modalAberto = new EventEmitter<void>();
+  @Input() modoEdicao: boolean = false;
   validado: boolean = false;
   etapaAtual: number = 1;
   formAberto: boolean = true;
@@ -26,32 +26,31 @@ export class CadastrarUsuariosComponent implements OnInit {
     nome: ['', Validators.required],
     fantasia: ['', Validators.required],
     tipo_pessoa: ['', Validators.required],
-    tipo_cadastro: ['', Validators.required],
-    cadastro_tipo_id: [2, Validators.required],
+    tipo_cadastro: [2, Validators.required],
+    cadastro_tipo_id: [null, Validators.required],
     cpf_cnpj: ['', [Validators.required, Validators.pattern(/^\d{11}$|^\d{14}$/)]],
-    // (/^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})$/)
     rg_ie: ['', Validators.required],
     tipo_regime_apuracao: ['', Validators.required],
     tipo_preco_venda: ['', Validators.required],
+    ativo: [true, Validators.required],
 
     cadastro_endereco_padrao: this.fb.group({
+      id: [null],
       descricao: ['', Validators.required],
       endereco: ['', Validators.required],
       endereco_numero: ['', Validators.required],
       endereco_bairro: ['', Validators.required],
       endereco_cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      // (/^\d{5}-\d{3}$/)
       endereco_municipio_codigo_ibge: [null],
       principal: [null, Validators.required],
       cobranca: [null, Validators.required],
       ie_produtor_rural: ['', [Validators.pattern(/^\d+$/)]],
-      // (/^[0-9]+$/)
     }),
 
     cadastro_contato_padrao: this.fb.group({
+      id: [null],
       descricao: ['', Validators.required],
       fone: ['', Validators.required],
-      // (/^\(\d{2}\) \d{4,5}-\d{4}$/)
       email: ['', [Validators.required, Validators.email]],
       enviar_orcamento: [null, Validators.required],
       enviar_nf: [null, Validators.required],
@@ -62,7 +61,6 @@ export class CadastrarUsuariosComponent implements OnInit {
   constructor(private fb: FormBuilder, private service: ValidacaoService) {}
 
   ngOnInit(): void {
-    // this.camposAutomaticos();
     this.gerarNovoId();
   }
   async gerarNovoId(): Promise<void> {
@@ -132,29 +130,40 @@ export class CadastrarUsuariosComponent implements OnInit {
   }
 
   salvarCadastro() {
-    if(this.usuarioForm.value.id) {
-      this.editarUsuario();
+    if (this.editando) {
+        this.editarUsuario();
     } else {
-      this.criarUsuario();
+        this.criarUsuario();
     }
-  }
+}
 
   criarUsuario(): void {
-    if (this.usuarioForm.valid) {
-      const novoUsuario: CadastroRequest = this.usuarioForm.value;
-      this.service.cadastrar(novoUsuario);
-    } else {
-      console.error('❌ Formulário inválido. Verifique os campos obrigatórios.');
-    }
+    const novoUsuario: CadastroRequest = this.usuarioForm.value;
+    console.log("Dados do usuário:", novoUsuario);
+    this.service.cadastrar(novoUsuario);
+    this.usuarioCadastrado.emit(novoUsuario);
+    this.usuarioForm.reset();
+    this.formAberto = false;
+    alert('Usuário cadastrado!');
   }
 
   editarUsuario(): void {
-    if(this.usuarioForm.valid) {
-      const tarefaEditada: CadastroRequest = this.usuarioForm.value;
-      this.service.editar(tarefaEditada, true)
+    if (this.usuarioForm.valid) {
+      const usuarioEditado: CadastroRequest = this.usuarioForm.value;
+
+      console.log("🛠️ Dados do usuário antes do envio:", usuarioEditado);
+
+      this.service.editar(usuarioEditado);
+
+      this.usuarioForm.reset();
+      this.editando = false;
+      this.formAberto = false;
+
+      console.log("🔄 Formulário resetado e modal fechado.");
+    } else {
+      console.warn("⚠️ Formulário inválido, verifique os campos!");
     }
   }
-
 
   abrirModalParaEdicao(usuario: CadastroRequest) {
     this.usuarioForm.patchValue(usuario);
@@ -173,16 +182,5 @@ export class CadastrarUsuariosComponent implements OnInit {
     if (this.etapaAtual > 1) {
       this.etapaAtual--;
     }
-  }
-
-  populandoEndereco(dados: any) {
-    this.usuarioForm.patchValue({
-      cadastro_endereco_padrao: {
-        endereco: dados.logradouro || '',
-        endereco_bairro: dados.bairro || '',
-        endereco_cep: dados.cep || '',
-        endereco_municipio_codigo_ibge: dados.ibge || '',
-      }
-    });
   }
 }

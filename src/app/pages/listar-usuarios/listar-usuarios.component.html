@@ -2,11 +2,13 @@
   <h2>Lista de Usuários</h2>
 
   <div class="button-group">
-    <button class="btn btn-primary" (click)="mostrarOuEsconderFormulario()">Inclusão de Novo Cadastro</button>
+    <button class="btn btn-primary" (click)="mostrarOuEsconderFormulario()">
+      Inclusão de Novo Cadastro
+    </button>
     <button class="btn btn-danger" (click)="logout()">Logout</button>
   </div>
 
-  <app-cadastrar-usuarios (usuarioCadastrado)="atualizarLista($event)" *ngIf="formAberto"></app-cadastrar-usuarios>
+  <app-cadastrar-usuarios (usuarioCadastrado)="atualizarLista($event)" *ngIf="formAberto" [modoEdicao]="modoEdicao"></app-cadastrar-usuarios>
 
   <table>
     <thead>
@@ -18,14 +20,16 @@
       <tr *ngFor="let usuario of usuarios$ | async; let i = index">
         <td>{{ i + 1 }}</td>
         <td>{{ usuario.nome }}</td>
-        <td>{{ usuario.cadastro_contato_padrao?.fone || 'Não informado' }}</td>
+        <td>{{ usuario.cadastro_contato_padrao?.fone || "Não informado" }}</td>
         <td>{{ usuario.cadastro_contato_padrao?.email }}</td>
         <td class="acoes">
           <div class="botoes-container">
-          <button class="btn btn-dark" (click)="editarUsuario(usuario)">Editar</button>
-          <button class="btn btn-info" (click)="verMais(i)">
-            {{ detalhesVisiveis.has(i) ? 'Ver menos' : 'Ver mais' }}
-          </button>
+            <button class="btn btn-dark" (click)="editarUsuario(usuario)">
+              Editar
+            </button>
+            <button class="btn btn-info" (click)="verMais(i)">
+              {{ detalhesVisiveis.has(i) ? "Ver menos" : "Ver mais" }}
+            </button>
           </div>
         </td>
       </tr>
@@ -35,18 +39,50 @@
             <div class="detalhes-usuario">
               <p><strong>Fantasia:</strong> {{ usuario.fantasia }}</p>
               <p><strong>Tipo de Pessoa:</strong> {{ usuario.tipo_pessoa }}</p>
-              <p><strong>Tipo de Cadastro:</strong> {{ usuario.tipo_cadastro }}</p>
+              <p>
+                <strong>Tipo de Cadastro:</strong> {{ usuario.tipo_cadastro }}
+              </p>
               <p><strong>CNPJ/CPF:</strong> {{ usuario.cpf_cnpj }}</p>
               <p><strong>RG/IE:</strong> {{ usuario.rg_ie }}</p>
-              <p><strong>Tipo de Regime:</strong> {{ usuario.tipo_regime_apuracao }}</p>
-              <p><strong>Tipo de Preço de Venda:</strong> {{ usuario.tipo_preco_venda }}</p>
-              <p><strong>Endereço:</strong> {{ usuario?.cadastro_endereco_padrao?.endereco || 'Endereço não disponível'}}</p>
-              <p><strong>Descrição do Endereço:</strong> {{ usuario?.cadastro_endereco_padrao?.descricao }}</p>
-              <p><strong>Telefone:</strong> {{ usuario?.cadastro_contato_padrao?.fone }}</p>
-              <p><strong>Email:</strong> {{ usuario?.cadastro_contato_padrao?.email }}</p>
-              <p><strong>Enviar Orçamento:</strong> {{ usuario?.cadastro_contato_padrao?.enviar_orcamento }}</p>
-              <p><strong>Enviar NF:</strong> {{ usuario?.cadastro_contato_padrao?.enviar_nf }}</p>
-              <p><strong>Enviar Boleto:</strong> {{ usuario?.cadastro_contato_padrao?.enviar_boleto }}</p>
+              <p>
+                <strong>Tipo de Regime:</strong>
+                {{ usuario.tipo_regime_apuracao }}
+              </p>
+              <p>
+                <strong>Tipo de Preço de Venda:</strong>
+                {{ usuario.tipo_preco_venda }}
+              </p>
+              <p>
+                <strong>Endereço:</strong>
+                {{
+                  usuario?.cadastro_endereco_padrao?.endereco ||
+                    "Endereço não disponível"
+                }}
+              </p>
+              <p>
+                <strong>Descrição do Endereço:</strong>
+                {{ usuario?.cadastro_endereco_padrao?.descricao }}
+              </p>
+              <p>
+                <strong>Telefone:</strong>
+                {{ usuario?.cadastro_contato_padrao?.fone }}
+              </p>
+              <p>
+                <strong>Email:</strong>
+                {{ usuario?.cadastro_contato_padrao?.email }}
+              </p>
+              <p>
+                <strong>Enviar Orçamento:</strong>
+                {{ usuario?.cadastro_contato_padrao?.enviar_orcamento }}
+              </p>
+              <p>
+                <strong>Enviar NF:</strong>
+                {{ usuario?.cadastro_contato_padrao?.enviar_nf }}
+              </p>
+              <p>
+                <strong>Enviar Boleto:</strong>
+                {{ usuario?.cadastro_contato_padrao?.enviar_boleto }}
+              </p>
             </div>
           </td>
         </tr>

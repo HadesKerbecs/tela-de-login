@@ -24,6 +24,7 @@ export interface CadastroRequest {
   tipo_preco_venda?: 'SomenteVenda' | 'Outro';
   cadastro_endereco_padrao?: CadastroEndereco;
   cadastro_contato_padrao?: CadastroContato;
+  ativo?: boolean;
 }
 
 export interface CadastroEndereco {

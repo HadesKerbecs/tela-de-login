@@ -13,6 +13,7 @@ import { CadastrarUsuariosComponent } from '../cadastrar-usuarios/cadastrar-usua
 export class ListarUsuariosComponent implements OnInit {
   @ViewChild(CadastrarUsuariosComponent) cadastroUsuario!: CadastrarUsuariosComponent;
   formAberto: boolean = false;
+  modoEdicao: boolean = false;
   usuarios$: Observable<CadastroRequest[]>;
   detalhesVisiveis: Set<number> = new Set();
 
@@ -34,6 +35,7 @@ export class ListarUsuariosComponent implements OnInit {
 
   editarUsuario(usuario: CadastroRequest): void {
     this.formAberto = true;
+    this.modoEdicao = true;
     setTimeout(() => {
       if (this.cadastroUsuario) {
         this.cadastroUsuario.abrirModalParaEdicao(usuario);
@@ -45,6 +47,7 @@ export class ListarUsuariosComponent implements OnInit {
 
   mostrarOuEsconderFormulario(): void {
     this.formAberto = !this.formAberto;
+    this.modoEdicao = false;
   }
 
   atualizarLista(novoUsuario: CadastroRequest): void {

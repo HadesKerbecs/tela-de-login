@@ -1,6 +1,6 @@
 <div class="form-container">
   <h2 class="titulo-formulario">
-    {{ editando ? 'Editando Usuário' : 'Cadastrando Usuário' }}
+    {{ editando ? "Editando Usuário" : "Cadastrando Usuário" }}
   </h2>
   <form
     @shownState
@@ -11,7 +11,6 @@
     <div *ngIf="etapaAtual === 1">
       <label for="nome">Insira seu nome</label>
       <input
-        
         type="text"
         formControlName="nome"
         placeholder="Digite seu nome"
@@ -23,7 +22,6 @@
       <!-- FANTASIA -->
       <label for="fantasia">Fantasia</label>
       <input
-        
         formControlName="fantasia"
         placeholder="Digite seu nome (fantasia)"
         [ngClass]="campoValidado('fantasia')"
@@ -37,7 +35,6 @@
       <!-- TIPO DE PESSOA -->
       <label for="tipo_pessoa">Tipo de pessoa</label>
       <select
-        
         formControlName="tipo_pessoa"
         [ngClass]="campoValidado('tipo_pessoa')"
       >
@@ -54,7 +51,6 @@
       <!-- TIPO DE CADASTRO -->
       <label for="tipo_cadastro">Tipo de cadastro</label>
       <select
-        
         formControlName="tipo_cadastro"
         [ngClass]="campoValidado('tipo_cadastro')"
       >
@@ -72,7 +68,6 @@
       <!-- CNPJ/CPF -->
       <label for="cpf_cnpj">CNPJ/CPF</label>
       <input
-        
         formControlName="cpf_cnpj"
         placeholder="Digite seu CPNJ ou CPF"
         [ngClass]="campoValidado('cpf_cnpj')"
@@ -86,7 +81,6 @@
       <!-- RG -->
       <label for="rg_ie">RG_IE</label>
       <input
-        
         formControlName="rg_ie"
         placeholder="Digite seu RG"
         [ngClass]="campoValidado('rg_ie')"
@@ -97,7 +91,6 @@
       <!-- TIPO DE REGIME -->
       <label for="tipo_regime_apuracao">Tipo de regime</label>
       <select
-        
         formControlName="tipo_regime_apuracao"
         [ngClass]="campoValidado('tipo_regime_apuracao')"
       >
@@ -115,7 +108,6 @@
       <!-- TIPO PREÇO VENDA -->
       <label for="tipo_preco_venda">Tipo de preço de venda</label>
       <select
-        
         formControlName="tipo_preco_venda"
         [ngClass]="campoValidado('tipo_preco_venda')"
       >
@@ -128,8 +120,25 @@
         mensagemValidacao="Escolha o tipo de preço de venda"
       >
       </app-mensagem>
+      <div class="radio-group">
+        <div *ngIf="modoEdicao">
+          <label for="ativo">Status do Cadastro</label>
+          <div class="radio-options">
+            <select formControlName="ativo">
+              <option [value]="true">Ativo</option>
+              <option [value]="false">Inativo</option>
+            </select>
+          </div>
+        </div>
+      </div>
       <div class="botoes-container">
-        <button type="button" (click)="proximaEtapa()" class="btn btn-success" [disabled]="!etapaValida" [ngClass]="habilitarAvanco()">
+        <button
+          type="button"
+          (click)="proximaEtapa()"
+          class="btn btn-success"
+          [disabled]="!etapaValida"
+          [ngClass]="habilitarAvanco()"
+        >
           Avançar
         </button>
         <button
@@ -139,6 +148,8 @@
           Cancelar
         </button>
       </div>
+      <!-- ATIVAR/INATIVAR CADASTRO (só aparece no modo edição) -->
+
     </div>
 
     <!-- DIV CADASTRO ENDEREÇO PADRÃO (DESCRIÇÃO) -->
@@ -149,7 +160,6 @@
     >
       <label for="descricao">Descrição</label>
       <input
-        
         formControlName="descricao"
         placeholder="Digite uma descrição para a entrega"
         [ngClass]="campoValidado('descricao')"
@@ -163,7 +173,6 @@
       <!-- ENDEREÇO -->
       <label for="endereco">Endereço</label>
       <input
-        
         formControlName="endereco"
         placeholder="Digite seu endereço"
         [ngClass]="campoValidado('endereco')"
@@ -174,7 +183,6 @@
       <!-- ENDEREÇO NÚMERO -->
       <label for="endereco_numero">Número de endereço</label>
       <input
-        
         formControlName="endereco_numero"
         placeholder="Digite o número do seu endereço"
         [ngClass]="campoValidado('endereco_numero')"
@@ -188,7 +196,6 @@
       <!-- ENDEREÇO BAIRRO -->
       <label for="endereco_bairro">Bairro de seu endereço</label>
       <input
-        
         formControlName="endereco_bairro"
         placeholder="Digite o bairro de seu endereço"
         [ngClass]="campoValidado('endereco_bairro')"
@@ -202,7 +209,6 @@
       <!-- ENDEREÇO CEP -->
       <label for="endereco_cep">CEP</label>
       <input
-        
         formControlName="endereco_cep"
         placeholder="Insira seu CEP"
         [ngClass]="campoValidado('endereco_cep')"
@@ -213,13 +219,22 @@
         mensagemValidacao="Preencha o bairro de seu endreço"
       >
       </app-mensagem>
-      <div *ngIf="usuarioForm.get('cadastro_endereco_padrao.endereco_cep')?.invalid && usuarioForm.get('cadastro_endereco_padrao.endereco_cep')?.touched">
-        <app-mensagem *ngIf="usuarioForm.get('cadastro_endereco_padrao.endereco_cep')?.errors?.['validadorCep']" mensagem="O Cep informado não existe"></app-mensagem>
+      <div
+        *ngIf="
+          usuarioForm.get('cadastro_endereco_padrao.endereco_cep')?.invalid &&
+          usuarioForm.get('cadastro_endereco_padrao.endereco_cep')?.touched
+        "
+      >
+        <app-mensagem
+          *ngIf="usuarioForm.get('cadastro_endereco_padrao.endereco_cep')?.errors?.['validadorCep']"
+          mensagem="O Cep informado não existe"
+        ></app-mensagem>
       </div>
 
       <!-- ENDEREÇO MUNICIPIO CODIGO IBGE -->
       <label for="endereco_municipio_codigo_ibge"
-        >Endereço municipio código ibge</label>
+        >Endereço municipio código ibge</label
+      >
       <input
         formControlName="endereco_municipio_codigo_ibge"
         placeholder="Digite o municipio código ibge"
@@ -227,29 +242,27 @@
       />
 
       <!-- ENDEREÇO PRINCIPAL -->
-    <div class="radio-group">
-      <label for="principal">Endereço principal?</label>
-      <div class="radio-options">
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="principal"
-          [value]="true"
-          [ngClass]="campoValidado('principal')"
-        />Sim
-      </label>
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="principal"
-          [value]="false"
-          [ngClass]="campoValidado('principal')"
-        />Não
-      </label>
-    </div>
-    </div>
+      <div class="radio-group">
+        <label for="principal">Endereço principal?</label>
+        <div class="radio-options">
+          <label>
+            <input
+              type="radio"
+              formControlName="principal"
+              [value]="true"
+              [ngClass]="campoValidado('principal')"
+            />Sim
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="principal"
+              [value]="false"
+              [ngClass]="campoValidado('principal')"
+            />Não
+          </label>
+        </div>
+      </div>
       <app-mensagem
         *ngIf="!validado"
         mensagemValidacao="Informe se é seu endereço principal"
@@ -258,28 +271,26 @@
 
       <!-- COBRANÇA -->
       <div class="radio-group">
-      <label for="cobranca">Endereço de cobrança?</label>
-      <div class="radio-options">
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="cobranca"
-          [value]="true"
-          [ngClass]="campoValidado('cobranca')"
-        />Sim
-      </label>
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="cobranca"
-          [value]="false"
-          [ngClass]="campoValidado('cobranca')"
-        />Não
-      </label>
+        <label for="cobranca">Endereço de cobrança?</label>
+        <div class="radio-options">
+          <label>
+            <input
+              type="radio"
+              formControlName="cobranca"
+              [value]="true"
+              [ngClass]="campoValidado('cobranca')"
+            />Sim
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="cobranca"
+              [value]="false"
+              [ngClass]="campoValidado('cobranca')"
+            />Não
+          </label>
+        </div>
       </div>
-    </div>
 
       <app-mensagem
         *ngIf="!validado"
@@ -295,13 +306,19 @@
         class="form-usuario"
       />
       <div class="botoes-container">
-      <button type="button" (click)="etapaAnterior()" class="btn btn-dark">
-        Voltar
-      </button>
+        <button type="button" (click)="etapaAnterior()" class="btn btn-dark">
+          Voltar
+        </button>
 
-      <button type="button" (click)="proximaEtapa()" class="btn btn-success" [disabled]="!etapaValida" [ngClass]="habilitarAvanco()">
-        Avançar
-      </button>
+        <button
+          type="button"
+          (click)="proximaEtapa()"
+          class="btn btn-success"
+          [disabled]="!etapaValida"
+          [ngClass]="habilitarAvanco()"
+        >
+          Avançar
+        </button>
       </div>
     </div>
 
@@ -313,7 +330,6 @@
     >
       <label for="descricao">Descrição</label>
       <input
-        
         formControlName="descricao"
         placeholder="Digite uma descrição de contato"
         [ngClass]="campoValidado('descricao')"
@@ -327,7 +343,6 @@
       <!-- TELEFONE -->
       <label for="fone">Telefone</label>
       <input
-        
         formControlName="fone"
         placeholder="Digite um telefone"
         [ngClass]="campoValidado('fone')"
@@ -341,7 +356,6 @@
       <!-- EMAIL -->
       <label for="email">Email</label>
       <input
-        
         formControlName="email"
         placeholder="Digite um email"
         [ngClass]="campoValidado('email')"
@@ -351,27 +365,27 @@
 
       <!-- ENVIAR ORÇAMENTO -->
       <div class="radio-group">
-      <label for="enviar_orcamento">O email inserido é para mandar o orçamento?</label>
-      <div class="radio-options">
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="enviar_orcamento"
-          [value]="true"
-          [ngClass]="campoValidado('enviar_orcamento')"
-        />Sim
-      </label>
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="enviar_orcamento"
-          [value]="false"
-          [ngClass]="campoValidado('enviar_orcamento')"
-        />Não
-      </label>
-      </div>
+        <label for="enviar_orcamento"
+          >O email inserido é para mandar o orçamento?</label
+        >
+        <div class="radio-options">
+          <label>
+            <input
+              type="radio"
+              formControlName="enviar_orcamento"
+              [value]="true"
+              [ngClass]="campoValidado('enviar_orcamento')"
+            />Sim
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="enviar_orcamento"
+              [value]="false"
+              [ngClass]="campoValidado('enviar_orcamento')"
+            />Não
+          </label>
+        </div>
       </div>
 
       <app-mensagem *ngIf="!validado" mensagemValidacao="Selecione um campo">
@@ -379,71 +393,71 @@
 
       <!-- ENVIAR NOTA FISCAL -->
       <div class="radio-group">
-      <label for="enviar_nf">O email inserido é para mandar a nota fiscal?</label>
-      <div class="radio-options">
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="enviar_nf"
-          [value]="true"
-          [ngClass]="campoValidado('enviar_nf')"
-        />Sim
-      </label>
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="enviar_nf"
-          [value]="false"
-          [ngClass]="campoValidado('enviar_nf')"
-        />Não
-      </label>
-      </div>
+        <label for="enviar_nf"
+          >O email inserido é para mandar a nota fiscal?</label
+        >
+        <div class="radio-options">
+          <label>
+            <input
+              type="radio"
+              formControlName="enviar_nf"
+              [value]="true"
+              [ngClass]="campoValidado('enviar_nf')"
+            />Sim
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="enviar_nf"
+              [value]="false"
+              [ngClass]="campoValidado('enviar_nf')"
+            />Não
+          </label>
+        </div>
       </div>
 
       <!-- ENVIAR BOLETO -->
       <div class="radio-group">
-      <label for="enviar_boleto">O email inserido é para mandar o boleto?</label>
-      <div class="radio-options">
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="enviar_boleto"
-          [value]="true"
-          [ngClass]="campoValidado('enviar_boleto')"
-        />Sim
-      </label>
-      <label>
-        <input
-          
-          type="radio"
-          formControlName="enviar_boleto"
-          [value]="false"
-          [ngClass]="campoValidado('enviar_boleto')"
-        />Não
-      </label>
-      </div>
+        <label for="enviar_boleto"
+          >O email inserido é para mandar o boleto?</label
+        >
+        <div class="radio-options">
+          <label>
+            <input
+              type="radio"
+              formControlName="enviar_boleto"
+              [value]="true"
+              [ngClass]="campoValidado('enviar_boleto')"
+            />Sim
+          </label>
+          <label>
+            <input
+              type="radio"
+              formControlName="enviar_boleto"
+              [value]="false"
+              [ngClass]="campoValidado('enviar_boleto')"
+            />Não
+          </label>
+        </div>
       </div>
 
       <app-mensagem *ngIf="!validado" mensagemValidacao="Selecione um campo">
       </app-mensagem>
       <div class="botoes-container">
-      <button type="button" (click)="etapaAnterior()" class="btn btn-dark">
-        Voltar
-      </button>
-      <div class="botoes-form">
-        <button
-          id="botao-salvar"
-          type="submit"
-          class="botao-form btn btn-sucess"
-          [ngClass]="habilitarSalvamento()"
-          (click)="editando ? editarUsuario() : criarUsuario()"
-        >
-          {{editando ? 'Editar' : 'Cadastrar'}}
+        <button type="button" (click)="etapaAnterior()" class="btn btn-dark">
+          Voltar
         </button>
-      </div>
+        <div class="botoes-form">
+          <button
+            id="botao-salvar"
+            type="submit"
+            class="botao-form btn btn-sucess"
+            [ngClass]="habilitarSalvamento()"
+            (click)="salvarCadastro()"
+          >
+            {{ editando ? "Editar" : "Cadastrar" }}
+          </button>
+        </div>
       </div>
     </div>
   </form>

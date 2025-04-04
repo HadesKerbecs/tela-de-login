@@ -1,5 +1,5 @@
 .container {
-  max-width: 800px;
+  max-width: auto;
   margin: 20px auto;
   background: #fff;
   padding: 20px;
@@ -63,4 +63,19 @@ h2 {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
+}
+
+.detalhes-usuario {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+tr td[colspan="5"] {
+  padding: 0;
+}
+
+tr td[colspan="5"] .detalhes-usuario {
+  padding: 15px;
 }

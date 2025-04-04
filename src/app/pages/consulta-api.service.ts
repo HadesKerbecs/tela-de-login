@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CadastroRequest, LoginRequest, LoginResponse } from '../hooks/dados';
-import { Observable, tap, throwError } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,38 +17,57 @@ export class ConsultaApiAuthService {
         if (response && response.access_token) {
           localStorage.setItem('access_token', response.access_token)
         }
+      }),
+      catchError(error => {
+        console.error('❌ Erro na autenticação:', error);
+        return throwError(() => error);
       })
     )
   };
-
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ConsultaAPICadastroService {
-  // URL base para a API de Cadastro
-  apiUrl = "https://desenvolvimento.maxdata.com.br/api/v1/Cadastro";
+    apiUrl = 'https://desenvolvimento.maxdata.com.br/api/v1/Cadastro';
 
-  constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {}
 
-  cadastrarUsuario(usuario: CadastroRequest): Observable<any> {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      console.error("Erro: Token de autenticação não encontrado.");
-      throw new Error("Token não encontrado.");
+    private getHeaders(): HttpHeaders {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            throw new Error('Token de autenticação não encontrado.');
+        }
+
+        return new HttpHeaders({
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        });
     }
 
-    // Se o cadastro for novo, remova campos que não devem ser enviados (ex.: id)
-    const { id, ...payload } = usuario;
+    cadastrarUsuario(usuario: CadastroRequest): Observable<CadastroRequest> {
+        console.log('📤 Enviando cadastro:', JSON.stringify(usuario));
 
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    });
+        return this.http.post<CadastroRequest>(this.apiUrl, usuario, { headers: this.getHeaders() }).pipe(
+            tap(response => console.log('✅ Resposta da API:', response)),
+            catchError(error => {
+                console.error('❌ Erro no cadastro:', error);
+                return throwError(() => error);
+            })
+        );
+    }
 
-    console.log("Dados enviados para API:", JSON.stringify(payload));
-    return this.http.post<any>(this.apiUrl, payload, { headers });
+    editarUsuario(id: number, usuario: CadastroRequest): Observable<CadastroRequest> {
+      console.log('📤 Enviando edição do usuário:', JSON.stringify(usuario));
+      const headers = this.getHeaders();
+      if (!headers) return throwError(() => new Error('Token não encontrado.'));
+
+      return this.http.put<CadastroRequest>(`${this.apiUrl}/${id}`, usuario, { headers }).pipe(
+          tap(response => console.log('✅ Resposta da API (Edição):', response)),
+          catchError(error => {
+              console.error('❌ Erro ao editar usuário:', error);
+              return throwError(() => error);
+          })
+      );
   }
 }
