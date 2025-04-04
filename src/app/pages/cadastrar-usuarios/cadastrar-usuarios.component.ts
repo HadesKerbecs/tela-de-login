@@ -140,7 +140,7 @@ export class CadastrarUsuariosComponent implements OnInit {
   criarUsuario(): void {
     const novoUsuario: CadastroRequest = this.usuarioForm.value;
     console.log("Dados do usuário:", novoUsuario);
-    this.service.cadastrar(novoUsuario);
+
     this.usuarioCadastrado.emit(novoUsuario);
     this.usuarioForm.reset();
     this.formAberto = false;

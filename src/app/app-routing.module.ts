@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { CadastrarUsuariosComponent } from './pages/cadastrar-usuarios/cadastrar-usuarios.component';
 import { ListarUsuariosComponent } from './pages/listar-usuarios/listar-usuarios.component';
+import { authGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -17,10 +18,12 @@ const routes: Routes = [
   {
     path: 'listar-usuarios',
     component: ListarUsuariosComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'cadastrar-usuarios',
     component: CadastrarUsuariosComponent,
+    canActivate: [authGuard]
   }
 ];
 

@@ -13,7 +13,7 @@ import { CadastrarUsuariosComponent } from './pages/cadastrar-usuarios/cadastrar
 import { MensagemComponent } from './componentes/mensagem/mensagem.component';
 
 @NgModule({
-  declarations: [ // Todos os componentes NÃO standalone devem estar aqui
+  declarations: [
     AppComponent,
     LoginComponent,
     ListarUsuariosComponent,
@@ -29,6 +29,6 @@ import { MensagemComponent } from './componentes/mensagem/mensagem.component';
     BrowserAnimationsModule
   ],
   providers: [],
-  bootstrap: [AppComponent] // Mantém a inicialização tradicional
+  bootstrap: [AppComponent] 
 })
 export class AppModule { }

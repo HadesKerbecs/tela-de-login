@@ -29,7 +29,7 @@ export class ListarUsuariosComponent implements OnInit {
   }
 
   logout(): void{
-    localStorage.removeItem('token');
+    localStorage.removeItem('access_token');
     this.router.navigate(['/paginaLogin'])
   }
 
